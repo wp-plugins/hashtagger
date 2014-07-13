@@ -1,4 +1,4 @@
-=== hastagger ===
+=== hashtagger ===
 Contributors: smartware.cc
 Tags: hashtag, hashtags, tag, tags, tag archive
 Requires at least: 3.0
@@ -15,7 +15,7 @@ Use [#hashtags](http://en.wikipedia.org/wiki/Hashtag) in posts. This plugin uses
 
 When saving a post each #hashtag is added as a "normal" tag (without leading hash) to the post, so it is fully compatible with existing tags. 
 
-When showing a post all #hastags are automatically converted to links leading to the corresponding tag archive page.
+When showing a post all #hashtags are automatically converted to links leading to the corresponding tag archive page.
 
 Use duplicate ##hashes to tell the plugin that this word should not be converted into a tag. Duplicate hashes are replaced by a single hash when showing the post.
 
