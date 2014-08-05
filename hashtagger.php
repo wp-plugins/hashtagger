@@ -3,7 +3,7 @@
 Plugin Name: hashtagger
 Plugin URI: http://smartware.cc/wp-hashtagger
 Description: Tag your posts by using #hashtags
-Version: 1.1
+Version: 1.2
 Author: smartware.cc
 Author URI: http://smartware.cc
 License: GPL2
@@ -30,16 +30,24 @@ function swcc_htg_generate_tags( $postid ) {
 }
 
 function swcc_htg_get_hashtags_from_content( $content ) {
-  preg_match_all( '/(^|[^a-z0-9_"#&])#([a-z0-9_\-]+)(?=[^<>]*(?:<|$))/i', $content, $matches );
+  preg_match_all('/(^|[\s!\.:;\?(>])#([\p{L}][\p{L}0-9_]+)/u', $content, $matches );
   return implode( ', ', $matches[2] );
 }
 
 function swcc_htg_content( $content ) {
+  //return str_replace( '##', '#', preg_replace( '/(^|[^a-z0-9_"#&])#([a-z0-9_\-]+)(?=[^<>]*(?:<|$))/i', '\1<a' . $css . ' href="' . swcc_htg_tag_base_url() . '\2">#\2</a>', $content ) );
+  return str_replace( '##', '#', preg_replace_callback( '/(^|[\s!\.:;\?(>])#([\p{L}][\p{L}0-9_]+)/u', 'swcc_make_link', $content ) );
+}
+
+// callback function for preg_replace_callback use in swcc_htg_content
+function swcc_make_link($match) {
   $css = get_option( 'swcc_htg_cssclass' );
   if ( $css != '' ) {
     $css = ' class="' . $css . '"';
   }
-  return str_replace( '##', '#', preg_replace( '/(^|[^a-z0-9_"#&])#([a-z0-9_\-]+)(?=[^<>]*(?:<|$))/i', '\1<a' . $css . ' href="' . swcc_htg_tag_base_url() . '\2">#\2</a>', $content ) );
+  $tag = get_term_by('name', $match[2], 'post_tag');
+  $slug = $tag->slug;
+  return $match[1] . '<a' . $css . ' href="' . swcc_htg_tag_base_url() . $slug . '">#' . $match[2] . '</a>';
 }
 
 function swcc_htg_admin_menu() {
