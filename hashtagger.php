@@ -3,7 +3,7 @@
 Plugin Name: hashtagger
 Plugin URI: http://smartware.cc/wp-hashtagger
 Description: Tag your posts by using #hashtags
-Version: 1.2
+Version: 1.3
 Author: smartware.cc
 Author URI: http://smartware.cc
 License: GPL2
@@ -25,18 +25,26 @@ License: GPL2
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+// set version
+define( 'SWCC_HASHTAGGER_VERSION', '1.3' );
+
+// set regex
+define( 'SWCC_HASHTAGGER_REGEX', '/(^|[\s!\.:;\?(>])#([\p{L}][\p{L}0-9_]+)(?=[^<>]*(?:<|$))/u' );
+
+// this function extracts the hashtags from content and adds them as tags to the post
 function swcc_htg_generate_tags( $postid ) {
   wp_set_post_tags( $postid, swcc_htg_get_hashtags_from_content( get_post_field('post_content', $postid) ), false );
 }
 
+// this function returns an array of hashtags from a given content - used by swcc_htg_generate_tags
 function swcc_htg_get_hashtags_from_content( $content ) {
-  preg_match_all('/(^|[\s!\.:;\?(>])#([\p{L}][\p{L}0-9_]+)/u', $content, $matches );
+  preg_match_all( SWCC_HASHTAGGER_REGEX, $content, $matches );
   return implode( ', ', $matches[2] );
 }
 
+// replace hashtags with links when displaying content
 function swcc_htg_content( $content ) {
-  //return str_replace( '##', '#', preg_replace( '/(^|[^a-z0-9_"#&])#([a-z0-9_\-]+)(?=[^<>]*(?:<|$))/i', '\1<a' . $css . ' href="' . swcc_htg_tag_base_url() . '\2">#\2</a>', $content ) );
-  return str_replace( '##', '#', preg_replace_callback( '/(^|[\s!\.:;\?(>])#([\p{L}][\p{L}0-9_]+)/u', 'swcc_make_link', $content ) );
+  return str_replace( '##', '#', preg_replace_callback( SWCC_HASHTAGGER_REGEX, 'swcc_make_link', $content ) );
 }
 
 // callback function for preg_replace_callback use in swcc_htg_content
@@ -47,13 +55,16 @@ function swcc_make_link($match) {
   }
   $tag = get_term_by('name', $match[2], 'post_tag');
   $slug = $tag->slug;
-  return $match[1] . '<a' . $css . ' href="' . swcc_htg_tag_base_url() . $slug . '">#' . $match[2] . '</a>';
+  return $match[1] . '<a' . $css . ' href="' . get_tag_link($tag->term_id) . '">#' . $match[2] . '</a>';
 }
 
+
+// adds the options page to admin menu
 function swcc_htg_admin_menu() {
   add_options_page( 'hashtagger ' . __( 'Settings' ), '#hashtagger', 'manage_options', 'swcc_htg_settings', 'swcc_htg_admin_page' );
 }
 
+// creates the options page
 function swcc_htg_admin_page() {
   ?>
   <div class="wrap">
@@ -82,6 +93,7 @@ function swcc_htg_admin_page() {
   <?php
 }
 
+// funtion to get the base directory for tags
 function swcc_htg_tag_base_url() {
   $url = get_site_url() . '/';
   $tagbase = get_option( 'tag_base' );
@@ -92,6 +104,7 @@ function swcc_htg_tag_base_url() {
   return trailingslashit($url);
 }
 
+// init the admin section
 function swcc_htg_admin_init() {        
   register_setting( 'swcc_htg', 'swcc_htg_cssclass', 'swcc_htg_admin_cssclass_validate' );
   add_settings_section( 'hashtagger-settings-css', __( 'Appearance' ), 'swcc_htg_admin_settings_css', 'swcc_htg_settings' );
@@ -103,7 +116,7 @@ function swcc_htg_admin_init() {
   wp_enqueue_script( 'postbox' );
 }
 
-// sttings group : Appearance
+// sttings group : appearance
 function swcc_htg_admin_settings_css() {
   echo '<p>' . __( 'Specify CSS class(es) that should be added to the #hashtag links', 'hashtagger' ) . '.</p>';
 }
@@ -160,6 +173,7 @@ function swcc_htg_add_footer_Script() {
   <?php
 }
 
+// *** main ***
 add_action( 'init', 'swcc_htg_add_text_domains' );
 
 add_action( 'save_post', 'swcc_htg_generate_tags', 9999 );

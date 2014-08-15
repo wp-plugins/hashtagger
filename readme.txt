@@ -3,7 +3,7 @@ Contributors: smartware.cc
 Tags: hashtag, hashtags, tag, tags, tag archive
 Requires at least: 3.0
 Tested up to: 3.9.1
-Stable tag: 1.2
+Stable tag: 1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -11,7 +11,7 @@ Tag your posts by using #hashtags
 
 == Description ==
 
-Use [#hashtags](http://en.wikipedia.org/wiki/Hashtag) in posts. This plugin uses the [WordPress Tag system](http://codex.wordpress.org/Posts_Tags_Screen) to field your post under the desired tags.
+> Use [#hashtags](http://en.wikipedia.org/wiki/Hashtag) in posts. This plugin uses the [WordPress Tag system](http://codex.wordpress.org/Posts_Tags_Screen) to field your post under the desired tags.
 
 When saving a post each #hashtag is added as a "normal" tag (without leading hash) to the post, so it is fully compatible with existing tags. 
 
@@ -63,6 +63,9 @@ The Tag base for the Tag Archive Page URL (e.g. example.com/**tag**/anytag) can 
 4. The hashtagger Settings Page
 
 == Changelog ==
+
+= 1.3 (2014-08-15) =
+* Solved: do not use hex color codes in css as hashtags (see [this Support topic](http://wordpress.org/support/topic/this-is-really-great-but-it-doesnt-let-me-color-code-anything))
 
 = 1.2 (2014-08-05) =
 * hashtags can contain non ASCII characters
