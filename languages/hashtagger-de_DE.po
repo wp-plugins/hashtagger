@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hashtagger\n"
 "POT-Creation-Date: 2014-07-31 19:14+0100\n"
-"PO-Revision-Date: 2014-07-31 19:38+0100\n"
+"PO-Revision-Date: 2014-09-14 17:19+0100\n"
 "Last-Translator: smartware.cc <sw@smartware.cc>\n"
 "Language-Team: smartware.cc <sw@smartware.cc>\n"
 "Language: de_DE\n"
@@ -28,3 +28,30 @@ msgstr "CSS Klassen Name(n)"
 
 msgid "Specify CSS class(es) that should be added to the #hashtag links"
 msgstr "Angabe von CSS Klasse(n) die den #hashtag Links hinzugefügt werden"
+
+msgid "CSS class name(s) for +#hashtag links"
+msgstr "CSS Klassen Name(n) für +#hashtag Links"
+
+msgid "@username links"
+msgstr "@username Links"
+
+msgid "Link @usernames"
+msgstr "@usernamen verlinken"
+
+msgid "CSS class name(s) for @usernames"
+msgstr "CSS Klassen Name(n) für @usernamen"
+
+msgid "Handling of @usernames"
+msgstr "Behandlung von @usernamen"
+
+msgid "Ignore @usernames"
+msgstr "@usernamen ignorieren"
+
+msgid "Link @usernames to users profile page"
+msgstr "@usernamen mit Benutzerprofil verlinken"
+
+msgid "Link @usernames to users website in same browser tab"
+msgstr "@usernamen mit Website des Benutzers in gleichem Browser Tab verlinken"
+
+msgid "Link @usernames to users website in new browser tab"
+msgstr "@usernamen mit Website des Benutzers in neuem Browser Tab verlinken"

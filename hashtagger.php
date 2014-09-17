@@ -3,7 +3,7 @@
 Plugin Name: hashtagger
 Plugin URI: http://smartware.cc/wp-hashtagger
 Description: Tag your posts by using #hashtags
-Version: 1.3
+Version: 2.0
 Author: smartware.cc
 Author URI: http://smartware.cc
 License: GPL2
@@ -26,10 +26,12 @@ License: GPL2
 */
 
 // set version
-define( 'SWCC_HASHTAGGER_VERSION', '1.3' );
+define( 'SWCC_HASHTAGGER_VERSION', '1.4' );
 
 // set regex
 define( 'SWCC_HASHTAGGER_REGEX', '/(^|[\s!\.:;\?(>])#([\p{L}][\p{L}0-9_]+)(?=[^<>]*(?:<|$))/u' );
+define( 'SWCC_HASHTAGGER_REGEX_NOTAG', '/(^|[\s!\.:;\?(>])\+#([\p{L}][\p{L}0-9_]+)(?=[^<>]*(?:<|$))/u' );
+define( 'SWCC_HASHTAGGER_REGEX_USERS', '/(^|[\s!\.:;\?(>])\@([\p{L}][\p{L}0-9_]+)(?=[^<>]*(?:<|$))/u' );
 
 // this function extracts the hashtags from content and adds them as tags to the post
 function swcc_htg_generate_tags( $postid ) {
@@ -44,20 +46,72 @@ function swcc_htg_get_hashtags_from_content( $content ) {
 
 // replace hashtags with links when displaying content
 function swcc_htg_content( $content ) {
-  return str_replace( '##', '#', preg_replace_callback( SWCC_HASHTAGGER_REGEX, 'swcc_make_link', $content ) );
-}
-
-// callback function for preg_replace_callback use in swcc_htg_content
-function swcc_make_link($match) {
-  $css = get_option( 'swcc_htg_cssclass' );
-  if ( $css != '' ) {
-    $css = ' class="' . $css . '"';
+  $content = str_replace( '##', '#', preg_replace_callback( SWCC_HASHTAGGER_REGEX_NOTAG, 'swcc_make_link_notag', preg_replace_callback( SWCC_HASHTAGGER_REGEX, 'swcc_make_link_tag', $content ) ) );
+  if ( get_option( 'swcc_htg_usernames', 'NONE' ) != 'NONE' ) {
+    $content = str_replace( '@@', '@', preg_replace_callback( SWCC_HASHTAGGER_REGEX_USERS, 'swcc_make_link_usernames', $content ) );
   }
-  $tag = get_term_by('name', $match[2], 'post_tag');
-  $slug = $tag->slug;
-  return $match[1] . '<a' . $css . ' href="' . get_tag_link($tag->term_id) . '">#' . $match[2] . '</a>';
+  return $content;
 }
 
+// callback functions for preg_replace_callback use in swcc_htg_content
+function swcc_make_link_tag( $match ) {
+  return swcc_make_link( $match, true );
+}
+function swcc_make_link_notag( $match ) {
+  return swcc_make_link( $match, false );
+}
+function swcc_make_link_usernames( $match ) {
+  return swcc_make_link_users( $match, get_option( 'swcc_htg_usernames', 'PROFILE' ) );
+}
+
+// function to generate tag link
+function swcc_make_link( $match, $mktag ) {
+  $tag = get_term_by('name', $match[2], 'post_tag');
+  if ( !$tag ) {
+    $content = $match[0];
+  } else {
+    $slug = $tag->slug;
+    if ( $mktag ) {
+      $css = get_option( 'swcc_htg_cssclass' );
+    } else {
+      $css = get_option( 'swcc_htg_cssclass_notag' );
+    }
+    if ( $css != '' ) {
+      $css = ' class="' . $css . '"';
+    }
+    $content = $match[1] . '<a' . $css . ' href="' . get_tag_link($tag->term_id) . '">#' . $match[2] . '</a>';
+  }
+  return $content;
+}
+
+// function to generate user link
+function swcc_make_link_users( $match, $link ) {
+  $username = $match[2];
+  $user = get_user_by( 'login', $username );
+  if ( !$user ) {
+    $content = $match[0];
+  } else {
+    if ( $link != 'PROFILE' ) {
+      $linkto = $user->user_url;
+    } else {
+      $linkto = '';
+    }
+    if ( $linkto == '' ) {
+      $linkto = get_author_posts_url( $user->ID );
+    }
+    if ( $link == 'WEBSITE-NEW' ) {
+      $target = ' target="_blank"';
+    } else {
+      $target = '';
+    }
+    $css = get_option( 'swcc_htg_usernamescssclass' );
+    if ( $css != '' ) {
+      $css = ' class="' . $css . '"';
+    }
+    $content = $match[1] . '<a' . $css . ' href="' . $linkto . '"'. $target . '>@' . $match[2] . '</a>';
+  }
+  return $content;
+}
 
 // adds the options page to admin menu
 function swcc_htg_admin_menu() {
@@ -67,14 +121,14 @@ function swcc_htg_admin_menu() {
 // creates the options page
 function swcc_htg_admin_page() {
   ?>
-  <div class="wrap">
+  <div class="wrap swcchtgadmin">
     <?php screen_icon(); ?>
     <h2>hashtagger <?php _e( 'Settings' ); ?></h2>           
     <form method="post" action="options.php">
       <div id="poststuff">
         <div id="post-body" class="metabox-holder columns-<?php echo 1 == get_current_screen()->get_columns() ? '1' : '2'; ?>">
           <div id="post-body-content">
-            <h3><?php _e( 'Permalinks' ); ?></h3>
+            <h3>#hashtag <?php _e( 'Permalinks' ); ?></h3>
             <p>#hashtags <?php _e( 'currently link to', 'hashtagger'); ?> <code style="white-space: nowrap"><?php echo swcc_htg_tag_base_url() . '[hashtag]'; ?></code>.</p>
             <p><?php printf( __( 'The <b>Tag base</b> for the Archive URL can be changed on %s page', 'hashtagger' ), '<a href="'. admin_url( 'options-permalink.php' ) .'">' . __( 'Permalink Settings' ) . '</a>' ); ?>.</p>
             <?php
@@ -107,8 +161,18 @@ function swcc_htg_tag_base_url() {
 // init the admin section
 function swcc_htg_admin_init() {        
   register_setting( 'swcc_htg', 'swcc_htg_cssclass', 'swcc_htg_admin_cssclass_validate' );
-  add_settings_section( 'hashtagger-settings-css', __( 'Appearance' ), 'swcc_htg_admin_settings_css', 'swcc_htg_settings' );
+  register_setting( 'swcc_htg', 'swcc_htg_cssclass_notag', 'swcc_htg_admin_cssclass_validate' );
+  add_settings_section( 'hashtagger-settings-css', '#hashtag ' . __( 'Appearance' ), 'swcc_htg_admin_settings_css', 'swcc_htg_settings' );
   add_settings_field( 'swcc_htg_settings_cssclass', __( 'CSS class name(s)', 'hashtagger' ), 'swcc_htg_admin_cssclass', 'swcc_htg_settings', 'hashtagger-settings-css', array( 'label_for' => 'swcc_htg_cssclass' ) );
+  add_settings_field( 'swcc_htg_settings_cssclass_notag', __( 'CSS class name(s) for +#hashtag links', 'hashtagger' ), 'swcc_htg_admin_cssclass_notag', 'swcc_htg_settings', 'hashtagger-settings-css', array( 'label_for' => 'swcc_htg_cssclass_notag' ) );
+  
+  register_setting( 'swcc_htg', 'swcc_htg_usernames', 'swcc_htg_usernames_validate' );
+  register_setting( 'swcc_htg', 'swcc_htg_usernamescssclass', 'swcc_htg_admin_cssclass_validate' );
+  add_settings_section( 'hashtagger-settings-usernames', __( '@username links', 'hashtagger' ), 'swcc_htg_admin_settings_usernames', 'swcc_htg_settings' );
+  add_settings_field( 'swcc_htg_settings_usernames', __( 'Link @usernames', 'hashtagger' ), 'swcc_htg_admin_usernames', 'swcc_htg_settings', 'hashtagger-settings-usernames', array( 'label_for' => 'swcc_htg_usernames' ) );
+  add_settings_field( 'swcc_htg_settings_usernamescssclass', __( 'CSS class name(s) for @usernames', 'hashtagger' ), 'swcc_htg_admin_usernamescssclass', 'swcc_htg_settings', 'hashtagger-settings-usernames', array( 'label_for' => 'swcc_htg_usernamescssclass' ) );
+  
+  //register_setting( 'swcc_htg', 'swcc_htg_cssclass_users', 'swcc_htg_admin_cssclass_validate' );
   
   add_meta_box( 'swcc_htg_meta_box_like', __( 'Like this Plugin?', 'hashtagger_general' ), 'swcc_htg_add_meta_box_like', 'swcc_htg', 'side' );
   add_meta_box( 'swcc_htg_meta_box_help', __( 'Need help?', 'hashtagger_general' ), 'swcc_htg_add_meta_box_help', 'swcc_htg', 'side' );
@@ -121,12 +185,38 @@ function swcc_htg_admin_settings_css() {
   echo '<p>' . __( 'Specify CSS class(es) that should be added to the #hashtag links', 'hashtagger' ) . '.</p>';
 }
 
+// sttings group : user names
+function swcc_htg_admin_settings_usernames() {
+  echo '<p>' . __( 'Handling of @usernames', 'hashtagger' ) . '.</p>';
+}
+
 // handle the settings field : css class
 function swcc_htg_admin_cssclass() {
   echo '<input class="regular-text" type="text" name="swcc_htg_cssclass" id="swcc_htg_cssclass" value="' . get_option( 'swcc_htg_cssclass' ) . '" />';
 }
 
-// validate input : css class
+// handle the settings field : css class notag
+function swcc_htg_admin_cssclass_notag() {
+  echo '<input class="regular-text" type="text" name="swcc_htg_cssclass_notag" id="swcc_htg_cssclass_notag" value="' . get_option( 'swcc_htg_cssclass_notag' ) . '" />';
+}
+
+// handle the settings field : user names
+function swcc_htg_admin_usernames() {
+  $curvalue = get_option( 'swcc_htg_usernames', 'NONE' );
+  echo '<select name="swcc_htg_usernames" id="swcc_htg_usernames">';
+  echo '<option value="NONE"' . ( ( $curvalue == 'NONE' ) ? ' selected="selected"' : '' ) . '>' . __('Ignore @usernames', 'hashtagger' ) . '</option>';
+  echo '<option value="PROFILE"' . ( ( $curvalue == 'PROFILE' ) ? ' selected="selected"' : '' ) . '>' . __( 'Link @usernames to users profile page', 'hashtagger' ) . '</option>';
+  echo '<option value="WEBSITE-SAME"' . ( ( $curvalue == 'WEBSITE-SAME' ) ? ' selected="selected"' : '' ) . '>' . __( 'Link @usernames to users website in same browser tab', 'hashtagger') . '</option>';
+  echo '<option value="WEBSITE-NEW"' . ( ( $curvalue == 'WEBSITE-NEW' ) ? ' selected="selected"' : '' ) . '>' . __( 'Link @usernames to users website in new browser tab', 'hashtagger') . '</option>';
+  echo '</select>';
+}
+
+// handle the settings field : css class for usernames
+function swcc_htg_admin_usernamescssclass() {
+  echo '<input class="regular-text" type="text" name="swcc_htg_usernamescssclass" id="swcc_htg_usernamescssclass" value="' . get_option( 'swcc_htg_usernamescssclass' ) . '" />';
+}
+
+// validate input : css class + css class notag
 function swcc_htg_admin_cssclass_validate( $input ) {
   $classes = explode(' ', $input);
   $css = '';
@@ -134,6 +224,11 @@ function swcc_htg_admin_cssclass_validate( $input ) {
     $css = $css . sanitize_html_class( $class ) . ' ';
   }
   return rtrim( $css );
+}
+
+// validate input : link user names - dummy
+function swcc_htg_usernames_validate( $input ) {
+  return $input;
 }
 
 // addd text domains
@@ -166,8 +261,21 @@ function swcc_htg_add_meta_box_help() {
   <?php
 }
 
+// add css
+function swcc_htg_admin_head() {
+  ?>
+    <style type="text/css">
+      .swcchtgadmin #post-body-content h3 {
+        font-size: 1.3em !important;
+        margin: 1em 0px !important;
+        padding: 0 !important;
+      }
+    </style>
+  <?php
+}
+
 // add jquery for meta boxes
-function swcc_htg_add_footer_Script() {
+function swcc_htg_add_footer_script() {
   ?>
   <script>jQuery(document).ready(function(){ postboxes.add_postbox_toggles(pagenow); });</script>
   <?php
@@ -182,5 +290,6 @@ add_filter( 'the_content', 'swcc_htg_content', 9999 );
 add_action( 'admin_menu', 'swcc_htg_admin_menu' );
 add_action( 'admin_init', 'swcc_htg_admin_init' );
 
-add_action( 'admin_footer', 'swcc_htg_add_footer_Script' );
+add_action( 'admin_head', 'swcc_htg_admin_head' );
+add_action( 'admin_footer', 'swcc_htg_add_footer_script' );
 ?>

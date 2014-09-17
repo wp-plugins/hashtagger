@@ -1,9 +1,10 @@
 === hashtagger ===
 Contributors: smartware.cc
+Donate link:http://smartware.cc/make-a-donation/
 Tags: hashtag, hashtags, tag, tags, tag archive
 Requires at least: 3.0
-Tested up to: 3.9.1
-Stable tag: 1.3
+Tested up to: 4.0
+Stable tag: 2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -11,17 +12,31 @@ Tag your posts by using #hashtags
 
 == Description ==
 
-> Use [#hashtags](http://en.wikipedia.org/wiki/Hashtag) in posts. This plugin uses the [WordPress Tag system](http://codex.wordpress.org/Posts_Tags_Screen) to field your post under the desired tags.
+> Use #hashtags and @usernames in your posts.
 
-When saving a post each #hashtag is added as a "normal" tag (without leading hash) to the post, so it is fully compatible with existing tags. 
+**New in Version 2.0: You can now use @usernames to link to Users! It's now also possible to link to tag archive page without adding the tag to the post.**
+
+= #hashtags =
+
+This plugin uses the [WordPress Tag system](http://codex.wordpress.org/Posts_Tags_Screen) to field your post under the desired tags. When saving a post each [#hashtag](http://en.wikipedia.org/wiki/Hashtag) is added as a "normal" tag (without leading hash) to the post, so it is fully compatible with existing tags. 
 
 When showing a post all #hastags are automatically converted to links leading to the corresponding tag archive page.
 
 Use duplicate ##hashes to tell the plugin that this word should not be converted into a tag. Duplicate hashes are replaced by a single hash when showing the post.
 
-Additional CSS Class(es) to add to the #hashtag links can configured on the plugins setting page.
+Use +#hashtag to only link to a tag archive page without adding "hashtag" as tag to the post. When showing the post the link is showed as "#hashtag" (without "+"). If the tag does not exist the text remains unchanged and no link is created.
+
+Additional CSS Class(es) to add to the #hashtag links can be configured on the plugins setting page.
 
 **Caution:** It is not necessary to generally adapt existing posts, because their tags stay unchanged. But keep in mind that on saving a post all existing tas are **removed** and replaced by the tags found in your post! 
+
+= @usernames =
+
+The usage of @usernames can be activated optionally. @usernames can link either to the Users Profile Page or to the Users Website. If the username does not exist the text remains unchanged and no link is created.
+
+Use @@username to avoid link creation. When showing the post this is displayed as "@username" without link.
+
+Additional CSS Class(es) to add to the @username links can be configured on the plugins setting page.
 
 = Languages =
 
@@ -34,10 +49,33 @@ Additional CSS Class(es) to add to the #hashtag links can configured on the plug
 
 Visit the [Plugin Homepage](http://smartware.cc/wp-hashtagger)
 
+= Do you like the hashtagger Plugin? =
+
+Thanks, I appreciate that. You don’t need to make a donation. No money, no beer, no coffee. Please, just [tell the world that you like what I’m doing](http://smartware.cc/make-a-donation/)! And that’s all.
+
 == Installation ==
 
-1. Upload the "hashtagger" folder to your "/wp-content/plugins/" directory.
+= From your WordPress dashboard =
+
+1. Visit 'Plugins' -> 'Add New'
+1. Search for 'hashtagger'
 1. Activate the plugin through the 'Plugins' menu in WordPress
+
+= Manually from wordpress.org =
+
+1. Download hashtagger from wordpress.org and unzip the archive
+1. Upload the `hashtagger` folder to your `/wp-content/plugins/` directory
+1. Activate the plugin through the 'Plugins' menu in WordPress
+
+= Usage =
+
+Just type anywhere in a post:
+
+* **#hashtag** to add "hashtag" as tag to the current post and link to tag archive page for "hashtag"
+* **+#hashtag** to link to tag archive page for "hashtag" without adding "hashtag" as tag to the current post
+* **##hashtag** to display "#hashtag" when viewing post without creating a link and without adding a tag
+* **@username** to link either to the Profile Page or the Website of User "username" (@username feature has to be activated)
+* **@@username** to display "@username" when viewing post without creating a link (@username feature has to be activated)
 
 == Frequently Asked Questions ==
 
@@ -53,7 +91,11 @@ This plugin does not change this behavior of WordPress because there already exi
 
 = How to change the Tag base? =
 
-The Tag base for the Tag Archive Page URL (e.g. example.com/**tag**/anytag) can be set on the **Permalink Settings** page under **Tag base** in your WP admin.
+The Tag base for the Tag Archive Page URL (e.g. example.com/**tag**/anytag) can be set on the 'Permalink Settings' page under 'Tag base' in your WP admin.
+
+= Where does @username link to? =
+
+This can be set on hashtagger Settings Page. @username links can either link to the Users Profile Page or to the Users Webiste (Users Profile Page if no Webpage is set). When linking to Users Website the link can be opened in a new window if desired.
 
 == Screenshots ==
 
@@ -63,6 +105,10 @@ The Tag base for the Tag Archive Page URL (e.g. example.com/**tag**/anytag) can 
 4. The hashtagger Settings Page
 
 == Changelog ==
+
+= 2.0 (2014-09-17) =
+* Optional usage of @usernames
+* Syntax +#hashtag to create link only without adding tag
 
 = 1.3 (2014-08-15) =
 * Solved: do not use hex color codes in css as hashtags (see [this Support topic](http://wordpress.org/support/topic/this-is-really-great-but-it-doesnt-let-me-color-code-anything))

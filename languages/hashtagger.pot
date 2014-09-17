@@ -26,3 +26,30 @@ msgstr ""
 
 msgid "Specify CSS class(es) that should be added to the #hashtag links"
 msgstr ""
+
+msgid "CSS class name(s) for +#hashtag links"
+msgstr ""
+
+msgid "@username links"
+msgstr ""
+
+msgid "Link @usernames"
+msgstr ""
+
+msgid "CSS class name(s) for @usernames"
+msgstr ""
+
+msgid "Handling of @usernames"
+msgstr ""
+
+msgid "Ignore @usernames"
+msgstr ""
+
+msgid "Link @usernames to users profile page"
+msgstr ""
+
+msgid "Link @usernames to users website in same browser tab"
+msgstr "@"
+
+msgid "Link @usernames to users website in new browser tab"
+msgstr ""
