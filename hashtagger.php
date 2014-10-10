@@ -3,7 +3,7 @@
 Plugin Name: hashtagger
 Plugin URI: http://smartware.cc/wp-hashtagger
 Description: Tag your posts by using #hashtags
-Version: 2.0
+Version: 2.1
 Author: smartware.cc
 Author URI: http://smartware.cc
 License: GPL2
@@ -86,8 +86,20 @@ function swcc_make_link( $match, $mktag ) {
 
 // function to generate user link
 function swcc_make_link_users( $match, $link ) {
+  $user = false;
   $username = $match[2];
-  $user = get_user_by( 'login', $username );
+  // get by nickname or by login name
+  if ( get_option( 'swcc_htg_usernamesnick', '0' ) == 0 ) {
+    // get by login name - default
+    $user = get_user_by( 'login', $username );
+  } else {
+    // get by nickname
+    $users = get_users( array( 'meta_key' => 'nickname', 'meta_value' => $username ) );
+    if ( count( $users ) == 1 ) {
+      // should result in one user
+      $user = $users[0];
+    }
+  }
   if ( !$user ) {
     $content = $match[0];
   } else {
@@ -158,18 +170,26 @@ function swcc_htg_tag_base_url() {
   return trailingslashit($url);
 }
 
+// this function can be used in theme
+// does all the hashtagger stuff on a string
+function do_hashtagger( $content ) {
+  return swcc_htg_content( $content );
+}
+
 // init the admin section
 function swcc_htg_admin_init() {        
   register_setting( 'swcc_htg', 'swcc_htg_cssclass', 'swcc_htg_admin_cssclass_validate' );
   register_setting( 'swcc_htg', 'swcc_htg_cssclass_notag', 'swcc_htg_admin_cssclass_validate' );
   add_settings_section( 'hashtagger-settings-css', '#hashtag ' . __( 'Appearance' ), 'swcc_htg_admin_settings_css', 'swcc_htg_settings' );
-  add_settings_field( 'swcc_htg_settings_cssclass', __( 'CSS class name(s)', 'hashtagger' ), 'swcc_htg_admin_cssclass', 'swcc_htg_settings', 'hashtagger-settings-css', array( 'label_for' => 'swcc_htg_cssclass' ) );
+  add_settings_field( 'swcc_htg_settings_cssclass', __( 'CSS class name(s) for #hashtags', 'hashtagger' ), 'swcc_htg_admin_cssclass', 'swcc_htg_settings', 'hashtagger-settings-css', array( 'label_for' => 'swcc_htg_cssclass' ) );
   add_settings_field( 'swcc_htg_settings_cssclass_notag', __( 'CSS class name(s) for +#hashtag links', 'hashtagger' ), 'swcc_htg_admin_cssclass_notag', 'swcc_htg_settings', 'hashtagger-settings-css', array( 'label_for' => 'swcc_htg_cssclass_notag' ) );
   
   register_setting( 'swcc_htg', 'swcc_htg_usernames', 'swcc_htg_usernames_validate' );
   register_setting( 'swcc_htg', 'swcc_htg_usernamescssclass', 'swcc_htg_admin_cssclass_validate' );
+  register_setting( 'swcc_htg', 'swcc_htg_usernamesnick', 'swcc_htg_admin_nick_validate' );
   add_settings_section( 'hashtagger-settings-usernames', __( '@username links', 'hashtagger' ), 'swcc_htg_admin_settings_usernames', 'swcc_htg_settings' );
   add_settings_field( 'swcc_htg_settings_usernames', __( 'Link @usernames', 'hashtagger' ), 'swcc_htg_admin_usernames', 'swcc_htg_settings', 'hashtagger-settings-usernames', array( 'label_for' => 'swcc_htg_usernames' ) );
+  add_settings_field( 'swcc_htg_settings_usernamesnick', __( '@nicknames', 'hashtagger' ), 'swcc_htg_admin_usernamesnick', 'swcc_htg_settings', 'hashtagger-settings-usernames', array( 'label_for' => 'swcc_htg_usernamesnick' ) );
   add_settings_field( 'swcc_htg_settings_usernamescssclass', __( 'CSS class name(s) for @usernames', 'hashtagger' ), 'swcc_htg_admin_usernamescssclass', 'swcc_htg_settings', 'hashtagger-settings-usernames', array( 'label_for' => 'swcc_htg_usernamescssclass' ) );
   
   //register_setting( 'swcc_htg', 'swcc_htg_cssclass_users', 'swcc_htg_admin_cssclass_validate' );
@@ -211,6 +231,11 @@ function swcc_htg_admin_usernames() {
   echo '</select>';
 }
 
+// handle the settings field : use nicknames instead of usernames
+function swcc_htg_admin_usernamesnick() {
+  echo '<input type="checkbox" name="swcc_htg_usernamesnick" id="swcc_htg_usernamesnick" value="1"' . ( ( get_option( 'swcc_htg_usernamesnick', '0' ) == 1 ) ?  'checked="checked"' : '' ) . ' />' . __( 'Use @nicknames instead of @usernames', 'hashtagger' ) . '<br /><div class="dashicons dashicons-shield"></div><strong>' . __( 'Highly recommended to enhance WordPress security!', 'hashtagger') . ' <a href="http://smartware.cc/wp-hashtagger/hashtagger-plugin-why-you-should-use-nicknames-instead-of-usernames/">' . __( 'Read more', 'hashtagger' ) . '</a>';
+}
+
 // handle the settings field : css class for usernames
 function swcc_htg_admin_usernamescssclass() {
   echo '<input class="regular-text" type="text" name="swcc_htg_usernamescssclass" id="swcc_htg_usernamescssclass" value="' . get_option( 'swcc_htg_usernamescssclass' ) . '" />';
@@ -231,6 +256,11 @@ function swcc_htg_usernames_validate( $input ) {
   return $input;
 }
 
+// validate input : use nicknames - dummy
+function swcc_htg_admin_nick_validate( $input ) {
+  return $input;
+}
+
 // addd text domains
 function swcc_htg_add_text_domains() {  
   load_plugin_textdomain( 'hashtagger_general', false, basename( dirname( __FILE__ ) ) . '/languages' );
@@ -241,11 +271,11 @@ function swcc_htg_add_text_domains() {
 function swcc_htg_add_meta_box_like() {
   ?>
   <ul>
-    <li><a href="http://wordpress.org/extend/plugins/hashtagger/"><?php _e( 'Please rate the plugin', 'hashtagger_general' ); ?></a></li>
-    <li><a href="http://smartware.cc/wp-hashtagger/"><?php _e( 'Plugin homepage', 'hashtagger_general'); ?></a></li>
-    <li><a href="http://smartware.cc/"><?php _e( 'Author homepage', 'hashtagger_general' );?></a></li>
-    <li><a href="https://plus.google.com/+SmartwareCc"><?php _e( 'Authors Google+ Page', 'hashtagger_general' ); ?></a></li>
-    <li><a href="https://www.facebook.com/smartware.cc"><?php _e( 'Authors facebook Page', 'hashtagger_general' ); ?></a></li>
+    <li><div class="dashicons dashicons-wordpress"></div>&nbsp;&nbsp;<a href="http://wordpress.org/extend/plugins/hashtagger/"><?php _e( 'Please rate the plugin', 'hashtagger_general' ); ?></a></li>
+    <li><div class="dashicons dashicons-admin-home"></div>&nbsp;&nbsp;<a href="http://smartware.cc/wp-hashtagger/"><?php _e( 'Plugin homepage', 'hashtagger_general'); ?></a></li>
+    <li><div class="dashicons dashicons-admin-home"></div>&nbsp;&nbsp;<a href="http://smartware.cc/"><?php _e( 'Author homepage', 'hashtagger_general' );?></a></li>
+    <li><div class="dashicons dashicons-googleplus"></div>&nbsp;&nbsp;<a href="https://plus.google.com/+SmartwareCc"><?php _e( 'Authors Google+ Page', 'hashtagger_general' ); ?></a></li>
+    <li><div class="dashicons dashicons-facebook-alt"></div>&nbsp;&nbsp;<a href="https://www.facebook.com/smartware.cc"><?php _e( 'Authors facebook Page', 'hashtagger_general' ); ?></a></li>
   </ul>
   <?php
 }
@@ -254,9 +284,9 @@ function swcc_htg_add_meta_box_like() {
 function swcc_htg_add_meta_box_help() {
   ?>
   <ul>
-    <li><a href="http://wordpress.org/plugins/hashtagger/faq/"><?php _e( 'Take a look at the FAQ section', 'hashtagger_general' ); ?></a></li>
-    <li><a href="http://wordpress.org/support/plugin/hashtagger"><?php _e( 'Take a look at the Support section', 'hashtagger_general'); ?></a></li>
-    <li><a href="http://smartware.cc/contact/"><?php _e( 'Feel free to contact the Author', 'hashtagger_general' ); ?></a></li>
+    <li><div class="dashicons dashicons-wordpress"></div>&nbsp;&nbsp;<a href="http://wordpress.org/plugins/hashtagger/faq/"><?php _e( 'Take a look at the FAQ section', 'hashtagger_general' ); ?></a></li>
+    <li><div class="dashicons dashicons-wordpress"></div>&nbsp;&nbsp;<a href="http://wordpress.org/support/plugin/hashtagger"><?php _e( 'Take a look at the Support section', 'hashtagger_general'); ?></a></li>
+    <li><div class="dashicons dashicons-admin-comments"></div>&nbsp;&nbsp;<a href="http://smartware.cc/contact/"><?php _e( 'Feel free to contact the Author', 'hashtagger_general' ); ?></a></li>
   </ul>
   <?php
 }

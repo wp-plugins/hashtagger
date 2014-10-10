@@ -4,7 +4,7 @@ Donate link:http://smartware.cc/make-a-donation/
 Tags: hashtag, hashtags, tag, tags, tag archive
 Requires at least: 3.0
 Tested up to: 4.0
-Stable tag: 2.0
+Stable tag: 2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,7 +14,7 @@ Tag your posts by using #hashtags
 
 > Use #hashtags and @usernames in your posts.
 
-**New in Version 2.0: You can now use @usernames to link to Users! It's now also possible to link to tag archive page without adding the tag to the post.**
+**New in Version 2.1: Use @nicknames instead of @usernames (this an important security feature - [read more](http://smartware.cc/wp-hashtagger/hashtagger-plugin-why-you-should-use-nicknames-instead-of-usernames/)), added theme function do_hashtagger()**
 
 = #hashtags =
 
@@ -38,12 +38,21 @@ Use @@username to avoid link creation. When showing the post this is displayed a
 
 Additional CSS Class(es) to add to the @username links can be configured on the plugins setting page.
 
+Optionally @nicknames can be used instead of @usernames. This is **recommended to enhance security** ([read more](http://smartware.cc/wp-hashtagger/hashtagger-plugin-why-you-should-use-nicknames-instead-of-usernames/)). Although using @nicknames is the better option, the default is @usernames for compatibility to Plugin versions prior 2.1.
+
 = Languages =
 
 * English
 * German
 
 **Translators welcome!** The languages directory contains POT files to start new translations. Please [contact Author](http://smartware.cc/) if you would like to do a translation.
+
+= Theme function =
+
+You can use `do_hashtagger( $content )` in your theme files to process #hashtags and @usernames in $content.
+
+**Example:**
+`<?php echo do_hashtagger( get_post_meta( get_the_ID(), 'mycustomfield', true ) ); ?>` 
 
 = More Information =
 
@@ -77,6 +86,10 @@ Just type anywhere in a post:
 * **@username** to link either to the Profile Page or the Website of User "username" (@username feature has to be activated)
 * **@@username** to display "@username" when viewing post without creating a link (@username feature has to be activated)
 
+= WordPress Security =
+
+**It is highly recommended to use @nicknames instead of @usernames!** Please read [this article](http://smartware.cc/wp-hashtagger/hashtagger-plugin-why-you-should-use-nicknames-instead-of-usernames/)!
+
 == Frequently Asked Questions ==
 
 = What characters can a hashtag include? =
@@ -97,6 +110,10 @@ The Tag base for the Tag Archive Page URL (e.g. example.com/**tag**/anytag) can 
 
 This can be set on hashtagger Settings Page. @username links can either link to the Users Profile Page or to the Users Webiste (Users Profile Page if no Webpage is set). When linking to Users Website the link can be opened in a new window if desired.
 
+= Why should I use @nicknames instead of @usernames =
+
+This is important to enhance WordPress security. Please read [this article](http://smartware.cc/wp-hashtagger/hashtagger-plugin-why-you-should-use-nicknames-instead-of-usernames/).
+
 == Screenshots ==
 
 1. Use hashtags in your post
@@ -105,6 +122,10 @@ This can be set on hashtagger Settings Page. @username links can either link to 
 4. The hashtagger Settings Page
 
 == Changelog ==
+
+= 2.1 (2014-10-10) =
+* Optionally use @nicknames instead of @usernames (**important** - [read more](http://smartware.cc/wp-hashtagger/hashtagger-plugin-why-you-should-use-nicknames-instead-of-usernames/) - thanks to [joeymalek](https://profiles.wordpress.org/joeymalek/) for pointing out)
+* Added `do_hashtagger()` Theme Function (thanks to [joinfof](https://profiles.wordpress.org/joinfof/) for the idea)
 
 = 2.0 (2014-09-17) =
 * Optional usage of @usernames

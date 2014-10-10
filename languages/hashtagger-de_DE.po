@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hashtagger\n"
 "POT-Creation-Date: 2014-07-31 19:14+0100\n"
-"PO-Revision-Date: 2014-09-14 17:19+0100\n"
+"PO-Revision-Date: 2014-10-10 17:47+0100\n"
 "Last-Translator: smartware.cc <sw@smartware.cc>\n"
 "Language-Team: smartware.cc <sw@smartware.cc>\n"
 "Language: de_DE\n"
@@ -23,8 +23,8 @@ msgid "The <b>Tag base</b> for the Archive URL can be changed on %s page"
 msgstr ""
 "Die <b>Schlagwort-Basis</b> für die Archiv URL kann unter %s geändert werden"
 
-msgid "CSS class name(s)"
-msgstr "CSS Klassen Name(n)"
+msgid "CSS class name(s) for #hashtags"
+msgstr "CSS Klassen Name(n) für #hashtags"
 
 msgid "Specify CSS class(es) that should be added to the #hashtag links"
 msgstr "Angabe von CSS Klasse(n) die den #hashtag Links hinzugefügt werden"
@@ -55,3 +55,15 @@ msgstr "@usernamen mit Website des Benutzers in gleichem Browser Tab verlinken"
 
 msgid "Link @usernames to users website in new browser tab"
 msgstr "@usernamen mit Website des Benutzers in neuem Browser Tab verlinken"
+
+msgid "@nicknames"
+msgstr "@nicknamen"
+
+msgid "Use @nicknames instead of @usernames"
+msgstr "@nicknamen anstatt @usernamen verwenden"
+
+msgid "Highly recommended to enhance WordPress security!"
+msgstr "Dringend empfohlen zur Verbesserung der WordPress Sicherheit!"
+
+msgid "Read more"
+msgstr "Mehr darüber"
