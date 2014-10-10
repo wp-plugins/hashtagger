@@ -1,0 +1,61 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: hashtagger\n"
+"POT-Creation-Date: 2014-10-10 15:44:40+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2014-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+msgid "currently link to"
+msgstr ""
+
+msgid "The <b>Tag base</b> for the Archive URL can be changed on %s page"
+msgstr ""
+
+msgid "CSS class name(s) for #hashtags"
+msgstr ""
+
+msgid "Specify CSS class(es) that should be added to the #hashtag links"
+msgstr ""
+
+msgid "CSS class name(s) for +#hashtag links"
+msgstr ""
+
+msgid "@username links"
+msgstr ""
+
+msgid "Link @usernames"
+msgstr ""
+
+msgid "CSS class name(s) for @usernames"
+msgstr ""
+
+msgid "Handling of @usernames"
+msgstr ""
+
+msgid "Ignore @usernames"
+msgstr ""
+
+msgid "Link @usernames to users profile page"
+msgstr ""
+
+msgid "Link @usernames to users website in same browser tab"
+msgstr "@"
+
+msgid "Link @usernames to users website in new browser tab"
+msgstr ""
+
+msgid "@nicknames"
+msgstr ""
+
+msgid "Use @nicknames instead of @usernames"
+msgstr ""
+
+msgid "Highly recommended to enhance WordPress security!"
+msgstr ""
+
+msgid "Read more"
+msgstr ""
