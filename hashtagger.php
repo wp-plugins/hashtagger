@@ -26,7 +26,7 @@ License: GPL2
 */
 
 // set version
-define( 'SWCC_HASHTAGGER_VERSION', '1.4' );
+define( 'SWCC_HASHTAGGER_VERSION', '2.1' );
 
 // set regex
 define( 'SWCC_HASHTAGGER_REGEX', '/(^|[\s!\.:;\?(>])#([\p{L}][\p{L}0-9_]+)(?=[^<>]*(?:<|$))/u' );
