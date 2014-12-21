@@ -121,6 +121,15 @@ class Hashtagger {
     return implode( ', ', $matches[2] );
   }
   
+  // general function to process content
+  function work( $content ) { 
+    $content = str_replace( '##', '#', preg_replace_callback( $this->regex_notag, array( $this, 'make_link_notag' ), preg_replace_callback( $this->regex_general, array( $this, 'make_link_tag' ), $content ) ) );
+    if ( $this->settings['usernames'] != 'NONE' ) {
+      $content = str_replace( '@@', '@', preg_replace_callback( $this->regex_users, array( $this, 'make_link_usernames' ), $content ) );
+    }
+    return $content;
+  }
+  
   // replace hashtags with links when displaying content
   // since v 3.0 post type depending
   function process_content( $content ) {
@@ -128,10 +137,7 @@ class Hashtagger {
     $post_type = get_post_type();
     $custom = get_post_types( array( 'public' => true, '_builtin' => false ), 'names', 'and' );
     if ( ( 'post' == $post_type ) || ( 'page' == $post_type && $this->settings['posttype_page'] ) || ( in_array( $post_type, $custom ) && $this->settings['posttype_custom'] ) ) {
-      $content = str_replace( '##', '#', preg_replace_callback( $this->regex_notag, array( $this, 'make_link_notag' ), preg_replace_callback( $this->regex_general, array( $this, 'make_link_tag' ), $content ) ) );
-      if ( $this->settings['usernames'] != 'NONE' ) {
-        $content = str_replace( '@@', '@', preg_replace_callback( $this->regex_users, array( $this, 'make_link_usernames' ), $content ) );
-      }
+      $content = $this->work( $content );
     }
     return $content;
   }
@@ -636,5 +642,6 @@ $hashtagger = new Hashtagger();
 // this function can be used in theme
 // does all the hashtagger stuff on a string
 function do_hashtagger( $content ) {
-  return $hashtagger->process_content( $content );
+  $htg = new Hashtagger();
+  return $htg->work( $content );
 }
