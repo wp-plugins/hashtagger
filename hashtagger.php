@@ -636,5 +636,5 @@ $hashtagger = new Hashtagger();
 // this function can be used in theme
 // does all the hashtagger stuff on a string
 function do_hashtagger( $content ) {
-  return $hashtagger->content( $content );
+  return $hashtagger->process_content( $content );
 }
