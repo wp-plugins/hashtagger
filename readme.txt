@@ -3,7 +3,7 @@ Contributors: smartware.cc
 Donate link:http://smartware.cc/make-a-donation/
 Tags: hashtag, hashtags, tag, tags, tag archive
 Requires at least: 3.0
-Tested up to: 4.0
+Tested up to: 4.1
 Stable tag: 2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -14,7 +14,7 @@ Tag your posts by using #hashtags
 
 > Use #hashtags and @usernames in your posts.
 
-**New in Version 2.1: Use @nicknames instead of @usernames (this an important security feature - [read more](http://smartware.cc/wp-hashtagger/hashtagger-plugin-why-you-should-use-nicknames-instead-of-usernames/)), added theme function do_hashtagger()**
+**Version 3.0 is completely rewritten and introduces a lot of new features and settings. Take a look at the Screenshots to get an idea of all the news!**
 
 = #hashtags =
 
@@ -28,7 +28,7 @@ Use +#hashtag to only link to a tag archive page without adding "hashtag" as tag
 
 Additional CSS Class(es) to add to the #hashtag links can be configured on the plugins setting page.
 
-**Caution:** It is not necessary to generally adapt existing posts, because their tags stay unchanged. But keep in mind that on saving a post all existing tas are **removed** and replaced by the tags found in your post! 
+**Caution:** It is not necessary to generally adapt existing posts, because their tags stay unchanged. But keep in mind that on saving a post all existing tas are **removed** and replaced by the tags found in your post! **This behavior can be changed in the Plugin Settings Area.**
 
 = @usernames =
 
@@ -40,12 +40,16 @@ Additional CSS Class(es) to add to the @username links can be configured on the 
 
 Optionally @nicknames can be used instead of @usernames. This is **recommended to enhance security** ([read more](http://smartware.cc/wp-hashtagger/hashtagger-plugin-why-you-should-use-nicknames-instead-of-usernames/)). Although using @nicknames is the better option, the default is @usernames for compatibility to Plugin versions prior 2.1.
 
+= Post Types and Section Types =
+
+In the plugins Settings you can define where #hashtags and @usernames should be processed. It is possible to use them on Posts, on Pages and on Custom Post Types within Content, Title and Excerpt. Activate only the Post Types and Section Types you want to be processed to avoid unnecessary processing for best performance.
+
 = Languages =
 
 * English
 * German
 
-**Translators welcome!** The languages directory contains POT files to start new translations. Please [contact Author](http://smartware.cc/) if you would like to do a translation.
+**Translators welcome!** The languages directory contains POT files to start new translations. Please [contact Author](http://smartware.cc/contact/) if you would like to do a translation.
 
 = Theme function =
 
@@ -98,7 +102,7 @@ The hashtag detection follows the rules for hastags on Twitter, Facebook and Goo
 
 = Does this also work for pages? =
 
-Yes and No. Yes - the plugin adds the tags also for pages. No - WordPress does not show the tags section for pages and also pages are not listed on tag archives. 
+Yes and No. Yes - the plugin can add the tags also for pages. No - WordPress does not show the tags section for pages and also pages are not listed on tag archives. 
 
 This plugin does not change this behavior of WordPress because there already exist several plugins that add the tag functionality for pages. Please use one of them if you want to tag your pages.
 
@@ -114,14 +118,32 @@ This can be set on hashtagger Settings Page. @username links can either link to 
 
 This is important to enhance WordPress security. Please read [this article](http://smartware.cc/wp-hashtagger/hashtagger-plugin-why-you-should-use-nicknames-instead-of-usernames/).
 
+= Can I use #hashtags and/or @usernames in Excerpts? =
+
+Yes, just activate this feature.
+
+= Can I use #hashtags and/or @usernames in Titles? =
+
+Yes, just activate this feature.
+
+= Can I regenerate all existing Posts after changing Settings? =
+
+Yes, you can regenerate all affected objects (Post, Pages, Custom Posts) using the current settings.
+
 == Screenshots ==
 
-1. Use hashtags in your post
-2. After saving the post the tags are added automatically
-3. In frontend the hashtags link to the tag archives
-4. The hashtagger Settings Page
+1. hashtagger Settings General Section: This section shows the current Tag base setting and the handling of @usernames respectively @nicknames can be changed here
+2. hashtagger Settings Advanced Section: As of version 3.0 it is possible to not delete tags that are not found in content – may be useful if already a lot of posts with tags exist - but please note that with this setting activated tags will not be removed if you delete a hashtag
+3. hashtagger Settings Post Types Section: In this section the Post Types to handle can be defined - activate only the Post Types for which you want to use hashtags to make sure posts are nor processed unnecessarily for better performance
+4. hashtagger Settings Section Types Section: In this section the Section Types to handle can be defined - only activate the Section Types you want to use for best performance
+5. hashtagger Settings CSS Style Section: Add CSS Classes to use for the generated links in Front End
+6. hashtagger Settings Regenerate Section: Regenerate all existing Objects with the current settings
+7. hashtagger Settings Regenerate Section: Regeneration in process
 
 == Changelog ==
+
+= 3.0 (2014-12-21) =
+* Completely rewritten with a lot of new Settings and a feature to regenerate existing objects
 
 = 2.1 (2014-10-10) =
 * Optionally use @nicknames instead of @usernames (**important** - [read more](http://smartware.cc/wp-hashtagger/hashtagger-plugin-why-you-should-use-nicknames-instead-of-usernames/) - thanks to [joeymalek](https://profiles.wordpress.org/joeymalek/) for pointing out)
@@ -146,3 +168,8 @@ This is important to enhance WordPress security. Please read [this article](http
 
 = 1.0 (2014-07-09) =
 * Initial Release
+
+== Upgrade Notice ==
+
+= 3.0 =
+Version 3.0 introduces a lot of new features and settings. Don't miss it!

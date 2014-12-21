@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: hashtagger\n"
-"POT-Creation-Date: 2014-10-10 15:44:40+00:00\n"
+"POT-Creation-Date: 2014-11-23 13:44:40+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -18,22 +18,13 @@ msgstr ""
 msgid "CSS class name(s) for #hashtags"
 msgstr ""
 
-msgid "Specify CSS class(es) that should be added to the #hashtag links"
-msgstr ""
-
 msgid "CSS class name(s) for +#hashtag links"
-msgstr ""
-
-msgid "@username links"
 msgstr ""
 
 msgid "Link @usernames"
 msgstr ""
 
 msgid "CSS class name(s) for @usernames"
-msgstr ""
-
-msgid "Handling of @usernames"
 msgstr ""
 
 msgid "Ignore @usernames"
@@ -58,4 +49,66 @@ msgid "Highly recommended to enhance WordPress security!"
 msgstr ""
 
 msgid "Read more"
+msgstr ""
+
+msgid "Post Types"
+msgstr ""
+
+msgid "Section Types"
+msgstr ""
+
+msgid "CSS Style"
+msgstr ""
+
+msgid "Regnerate"
+msgstr ""
+
+msgid "Process all existing objects using the current settings"
+msgstr ""
+
+msgid "No objects to process!"
+msgstr ""
+
+msgid "Do not delete unused Tags"
+msgstr ""
+
+msgid "Custom Post Types"
+msgstr ""
+
+msgid "Handling of @usernames"
+msgstr ""
+
+msgid "Handling of existing Tags"
+msgstr ""
+
+msgid "Post Types to process"
+msgstr ""
+
+msgid "Section Types to process"
+msgstr ""
+
+msgid "CSS Classes to style links"
+msgstr ""
+
+msgid "Please confirm to regenerate"
+msgstr ""
+
+msgid "Process all objects"
+msgstr ""
+
+msgid "Please be patient while objects are processed. Do not close or leave this page."
+msgstr ""
+
+msgid "Abort regeneration"
+msgstr ""
+
+msgid "Aborting process..."
+msgstr ""
+
+#. translators: never change {COUNTER} and {OBJECTS} !!!
+msgid "Process aborted. {COUNTER} of {OBJECTS} objects have been processed."
+msgstr ""
+
+#. translators: never change {OBJECTS} !!!
+msgid "All done. {OBJECTS} objects have been processed."
 msgstr ""
