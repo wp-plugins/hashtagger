@@ -3,7 +3,7 @@
 Plugin Name: hashtagger
 Plugin URI: http://smartware.cc/wp-hashtagger
 Description: Tag your posts by using #hashtags
-Version: 3.0
+Version: 3.1
 Author: smartware.cc
 Author URI: http://smartware.cc
 License: GPL2
@@ -40,7 +40,7 @@ class Hashtagger {
   
 	public function __construct() {
 		$this->plugin_name = 'hashtagger';
-		$this->version = '3.0';
+		$this->version = '3.1';
     $this->get_settings();
     $this->init();
     $this->init_admin();
@@ -63,6 +63,8 @@ class Hashtagger {
     if ( $this->settings['sectiontype_excerpt'] ) {
       add_filter( 'the_excerpt', array( $this, 'process_excerpt' ), 9999 );
     }
+    
+    add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'add_settings_link' ) ); 
     
   }
   
@@ -87,6 +89,9 @@ class Hashtagger {
     $this->settings['sectiontype_excerpt'] = ( get_option( 'swcc_htg_sectiontype_excerpt', '0' ) == 1 ) ?  true : false;
     $this->settings['advanced_nodelete'] = ( get_option( 'swcc_htg_advanced_nodelete', '0' ) == 0 ) ?  false : true;
     $this->settings['usernames'] = get_option( 'swcc_htg_usernames', 'NONE' );
+    if ( ! in_array( $this->settings['usernames'], array( 'NONE', 'PROFILE', 'WEBSITE-SAME', 'WEBSITE-NEW' ) ) ) {
+      $this->settings['usernames'] = 'NONE';
+    }
     $this->settings['usernamesnick'] = ( get_option( 'swcc_htg_usernamesnick', '0' ) == 0 ) ?  false : true;
     $this->settings['cssclass'] = get_option( 'swcc_htg_cssclass', '' ); 
     $this->settings['cssclass_notag'] = get_option( 'swcc_htg_cssclass_notag', '' );
@@ -227,11 +232,10 @@ class Hashtagger {
   // uninstall plugin
   function uninstall() {
     if( is_multisite() ) {
-      uninstall_network();
+      $this->uninstall_network();
     } else {
-      uninstall_single();
+      $this->uninstall_single();
     }
-    die();
   }
   
   // uninstall network wide
@@ -241,7 +245,7 @@ class Hashtagger {
     $blogids = $wpdb->get_col( esc_sql( 'SELECT blog_id FROM ' . $wpdb->blogs ) );
     foreach ($blogids as $blogid) {
       switch_to_blog( $blogid );
-      uninstall_single();
+      $this->uninstall_single();
     }
     switch_to_blog( $activeblog );
   }
@@ -250,10 +254,16 @@ class Hashtagger {
   function uninstall_single() {
     foreach ( $this->settings as $key => $value) {
       if ( $key != 'tagbase' ) {
-        delete_option( $key );
+        delete_option( 'swcc_htg_' . $key );
       }
     }
   }
+  
+  // add a link to settings page in plugin list
+  function add_settings_link( $links ) {
+    return array_merge( $links, array( '<a href="' . admin_url( 'options-general.php?page=hashtaggersettings' ) . '">' . __( 'Settings' ) . '</a>') );
+  }
+  
 }
 
 class Hashtagger_Admin {
@@ -272,6 +282,7 @@ class Hashtagger_Admin {
   }
   
   private function init() {
+    add_action( 'admin_head', array( $this, 'admin_style' ) );
     add_action( 'admin_menu', array( $this, 'admin_menu' ) );
     add_action( 'admin_init', array( $this, 'admin_init' ) );
     add_action( 'wp_ajax_hashtagger_regenerate', array( &$this, 'admin_hashtagger_regenerate' ) );
@@ -282,11 +293,60 @@ class Hashtagger_Admin {
     add_options_page( 'hashtagger ' . __( 'Settings' ), '#hashtagger', 'manage_options', 'hashtaggersettings', array( $this, 'admin_page' ) );
   }
   
+  // add css
+  function admin_style() {
+    if ( get_current_screen()->id == 'settings_page_hashtaggersettings' ) { 
+      ?>
+      <style type="text/css">
+        .hashtagger_settings_form input[type="text"], .hashtagger_settings_form select { 
+          border-width:2px; 
+          padding:10px; 
+          border-style:solid; 
+          border-radius:5px; 
+          height: auto !important;
+        }
+        .hashtagger_settings_form input[type="text"]:not(:focus), .hashtagger_settings_form select:not(:focus) { 
+          box-shadow: 0px 0px 5px 0px rgba(42,42,42,.75); 
+        }
+        .hashtagger_settings_form input[type="checkbox"], #hashtagger_ajax_area input[type="checkbox"] {
+            display: none;
+        }
+        .hashtagger_settings_form input[type="checkbox"] + label.check, #hashtagger_ajax_area input[type="checkbox"] + label.check {
+          display: inline-block;  
+          border: 2px solid #DDD;
+          box-shadow: 0px 0px 5px 0px rgba(42,42,42,.75); 
+          border-style:solid; 
+          border-radius:5px; 
+          width: 30px;
+          height: 30px;
+          line-height: 30px;
+          text-align: center;
+          font-family: dashicons;
+          font-size: 2em;
+          margin-right: 10px;
+        }
+        .hashtagger_settings_form input[type="checkbox"]:disabled + label.check, #hashtagger_ajax_area input[type="checkbox"]:disabled + label.check {
+          background-color: #DDD;
+        }
+        .hashtagger_settings_form input[type="checkbox"] + label.check:before, #hashtagger_ajax_area input[type="checkbox"] + label.check:before {
+          content: "";  
+        }
+        .hashtagger_settings_form input[type="checkbox"]:checked + label.check:before, #hashtagger_ajax_area input[type="checkbox"]:checked + label.check:before {
+          content: "\f147";
+        }
+      </style>
+      <?php
+    }
+  }
+  
   // creates the options page
   function admin_page() {
     $url = admin_url( 'options-general.php?page=' . $_GET['page'] . '&tab=' );
-    $current_tab = $_GET['tab'];
-    if ( '' == $current_tab ) {
+    $current_tab = 'general';
+    if ( isset( $_GET['tab'] ) ) {
+      $current_tab = $_GET['tab'];
+    }
+    if ( ! in_array( $current_tab, array('general', 'advanced', 'posttype', 'sectiontype', 'css', 'regenerate') ) ) {
       $current_tab = 'general';
     }
     ?>
@@ -322,11 +382,11 @@ class Hashtagger_Admin {
                   </div>
                 </div>
               <?php } else { ?>
-                <form method="post" action="options.php">
+                <form method="post" action="options.php" class="hashtagger_settings_form">
                   <?php if ( 'general' == $current_tab ) { ?>
                       <div class="postbox">
                         <div class="inside">
-                          <p>hashtagger Version <?php echo $this->version; ?></p>
+                          <p style="line-height: 32px; padding-left: 40px; background-image: url(<?php echo plugins_url( 'pluginicon.png', __FILE__ ); ?>); background-repeat: no-repeat;">hashtagger Version <?php echo $this->version; ?></p>
                         </div>
                       </div>
                       <div class="postbox">
@@ -425,7 +485,7 @@ class Hashtagger_Admin {
   
   // handle the settings field : use nicknames instead of usernames
   function admin_usernamesnick() {
-    echo '<input type="checkbox" name="swcc_htg_usernamesnick" id="swcc_htg_usernamesnick" value="1"' . ( ( $this->settings['usernamesnick'] == true ) ?  'checked="checked"' : '' ) . ' />' . __( 'Use @nicknames instead of @usernames', 'hashtagger' ) . '<br /><div class="dashicons dashicons-shield"></div><strong>' . __( 'Highly recommended to enhance WordPress security!', 'hashtagger') . ' <a href="http://smartware.cc/wp-hashtagger/hashtagger-plugin-why-you-should-use-nicknames-instead-of-usernames/">' . __( 'Read more', 'hashtagger' ) . '</a>';
+    echo '<input type="checkbox" name="swcc_htg_usernamesnick" id="swcc_htg_usernamesnick" value="1"' . ( ( $this->settings['usernamesnick'] == true ) ?  'checked="checked"' : '' ) . ' /><label for="swcc_htg_usernamesnick" class="check"></label>' . __( 'Use @nicknames instead of @usernames', 'hashtagger' ) . '<br /><div class="dashicons dashicons-shield"></div><strong>' . __( 'Highly recommended to enhance WordPress security!', 'hashtagger') . ' <a href="http://smartware.cc/wp-hashtagger/hashtagger-plugin-why-you-should-use-nicknames-instead-of-usernames/">' . __( 'Read more', 'hashtagger' ) . '</a>';
   }
 
   // * Advanced Section
@@ -437,7 +497,7 @@ class Hashtagger_Admin {
   
   // handle the settings field : no delete
   function admin_advanced_nodelete() {
-    echo '<input type="checkbox" name="swcc_htg_advanced_nodelete" id="swcc_htg_advanced_nodelete" value="1"' . ( ( $this->settings['advanced_nodelete'] == true ) ?  'checked="checked"' : '' ) . ' />';
+    echo '<input type="checkbox" name="swcc_htg_advanced_nodelete" id="swcc_htg_advanced_nodelete" value="1"' . ( ( $this->settings['advanced_nodelete'] == true ) ?  'checked="checked"' : '' ) . ' /><label for="swcc_htg_advanced_nodelete" class="check"></label>';
   }
   
   // * Post Type Section
@@ -449,17 +509,17 @@ class Hashtagger_Admin {
   
   // handle the settings field : posttype 'post' - this is only a dummy, maybe for future use, currently posts are always on
   function admin_posttype_post() {
-    echo '<input type="checkbox" name="swcc_htg_posttype_post" id="swcc_htg_posttype_post" value="1" checked="checked" disabled="disabled" />';
+    echo '<input type="checkbox" name="swcc_htg_posttype_post" id="swcc_htg_posttype_post" value="1" checked="checked" disabled="disabled" /><label for="swcc_htg_posttype_post" class="check"></label>';
   }
   
   // handle the settings field : posttype 'page'
   function admin_posttype_page() {
-    echo '<input type="checkbox" name="swcc_htg_posttype_page" id="swcc_htg_posttype_page" value="1"' . ( ( $this->settings['posttype_page'] == true ) ?  'checked="checked"' : '' ) . ' />';
+    echo '<input type="checkbox" name="swcc_htg_posttype_page" id="swcc_htg_posttype_page" value="1"' . ( ( $this->settings['posttype_page'] == true ) ?  'checked="checked"' : '' ) . ' /><label for="swcc_htg_posttype_page" class="check"></label>';
   }
   
   // handle the settings field : posttype 'custom post types'
   function admin_posttype_custom() {
-    echo '<input type="checkbox" name="swcc_htg_posttype_custom" id="swcc_htg_posttype_custom" value="1"' . ( ( $this->settings['posttype_custom'] == true ) ?  'checked="checked"' : '' ) . ' />';
+    echo '<input type="checkbox" name="swcc_htg_posttype_custom" id="swcc_htg_posttype_custom" value="1"' . ( ( $this->settings['posttype_custom'] == true ) ?  'checked="checked"' : '' ) . ' /><label for="swcc_htg_posttype_custom" class="check"></label>';
   }
   
   // * Section Type Section
@@ -471,17 +531,17 @@ class Hashtagger_Admin {
   
   // handle the settings field : sectiontype 'title'
   function admin_sectiontype_title() {
-    echo '<input type="checkbox" name="swcc_htg_sectiontype_title" id="swcc_htg_sectiontype_title" value="1"' . ( ( $this->settings['sectiontype_title'] == true ) ?  'checked="checked"' : '' ) . ' />';
+    echo '<input type="checkbox" name="swcc_htg_sectiontype_title" id="swcc_htg_sectiontype_title" value="1"' . ( ( $this->settings['sectiontype_title'] == true ) ?  'checked="checked"' : '' ) . ' /><label for="swcc_htg_sectiontype_title" class="check"></label>';
   }
   
   // handle the settings field : sectiontype 'excerpt'
   function admin_sectiontype_excerpt() {
-    echo '<input type="checkbox" name="swcc_htg_sectiontype_excerpt" id="swcc_htg_sectiontype_excerpt" value="1"' . ( ( $this->settings['sectiontype_excerpt'] == true ) ?  'checked="checked"' : '' ) . ' />';
+    echo '<input type="checkbox" name="swcc_htg_sectiontype_excerpt" id="swcc_htg_sectiontype_excerpt" value="1"' . ( ( $this->settings['sectiontype_excerpt'] == true ) ?  'checked="checked"' : '' ) . ' /><label for="swcc_htg_sectiontype_excerpt" class="check"></label>';
   }
   
   // handle the settings field : sectiontype 'content' ' - this is only a dummy, maybe for future use, currently content is always on
   function admin_sectiontype_content() {
-    echo '<input type="checkbox" name="swcc_htg_sectiontype_content" id="swcc_htg_sectiontype_content" value="1" checked="checked" disabled="disabled" />';
+    echo '<input type="checkbox" name="swcc_htg_sectiontype_content" id="swcc_htg_sectiontype_content" value="1" checked="checked" disabled="disabled" /><label for="swcc_htg_sectiontype_content" class="check"></label>';
   }
   
   // * CSS Style Section
@@ -543,7 +603,7 @@ class Hashtagger_Admin {
         var objects = <?php echo count( $objects ); ?>;
         var counter = 0;
         var abort = false;
-        jQuery( '#hashtagger_ajax_area' ).html( '<p><input type="checkbox" name="hashtagger_regenerate_confirmation" id="hashtagger_regenerate_confirmation" value="ok" /><span id="hashtagger_regenerate_confirmation_hint"><?php _e( 'Please confirm to regenerate', 'hashtagger' ); ?></span></p><p><input type="button" name="sumbit_regnerate" id="sumbit_regnerate" class="button button-primary button-large" value="<?php _e( 'Process all objects', 'hashtagger' ); ?> (<?php echo count( $objects ); ?>)"  /></p>' );
+        jQuery( '#hashtagger_ajax_area' ).html( '<p><input type="checkbox" name="hashtagger_regenerate_confirmation" id="hashtagger_regenerate_confirmation" value="ok" /><label for="hashtagger_regenerate_confirmation" class="check"></label><span id="hashtagger_regenerate_confirmation_hint"><?php _e( 'Please confirm to regenerate', 'hashtagger' ); ?></span></p><p><input type="button" name="sumbit_regnerate" id="sumbit_regnerate" class="button button-primary button-large" value="<?php _e( 'Process all objects', 'hashtagger' ); ?> (<?php echo count( $objects ); ?>)"  /></p>' );
         jQuery( '#sumbit_regnerate' ).click( function() { 
           if ( jQuery( '#hashtagger_regenerate_confirmation' ).prop( 'checked' ) ) {
             jQuery( '#hashtagger_ajax_area' ).html( '<p><?php _e( 'Please be patient while objects are processed. Do not close or leave this page.', 'hashtagger' ); ?></p><p><div style="width: 100%; height: 40px; border: 2px solid #222; border-radius: 5px; background-color: #FFF"><div id="hashtagger_regnerate_progressbar" style="width: 0; height: 100%; background-image: url(<?php echo plugins_url( 'progress.png', __FILE__ ); ?>); background-repeat: repeat-x" ></div></div></p><p id="hashtagger_abort_area"><input type="button" name="cancel_regnerate" id="cancel_regnerate" class="button button-secondary button-large" value="<?php _e( 'Abort regeneration', 'hashtagger' ); ?>" /></p>' );

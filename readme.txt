@@ -4,7 +4,7 @@ Donate link:http://smartware.cc/make-a-donation/
 Tags: hashtag, hashtags, tag, tags, tag archive
 Requires at least: 3.0
 Tested up to: 4.1
-Stable tag: 3.0
+Stable tag: 3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,8 +13,6 @@ Tag your posts by using #hashtags
 == Description ==
 
 > Use #hashtags and @usernames in your posts.
-
-**Version 3.0 is completely rewritten and introduces a lot of new features and settings. Take a look at the Screenshots to get an idea of all the news!**
 
 = #hashtags =
 
@@ -48,6 +46,7 @@ In the plugins Settings you can define where #hashtags and @usernames should be 
 
 * English
 * German
+* Spanish (thanks to [Andrew](http://www.webhostinghub.com))
 
 **Translators welcome!** The languages directory contains POT files to start new translations. Please [contact Author](http://smartware.cc/contact/) if you would like to do a translation.
 
@@ -142,6 +141,10 @@ Yes, you can regenerate all affected objects (Post, Pages, Custom Posts) using t
 
 == Changelog ==
 
+= 3.1 (2015-02-05) =
+* Spanish translation added (thanks to [Andrew](http://www.webhostinghub.com) for translating)
+* Cosmetics
+
 = 3.0 (2014-12-21) =
 * Completely rewritten with a lot of new Settings and a feature to regenerate existing objects
 
@@ -170,6 +173,9 @@ Yes, you can regenerate all affected objects (Post, Pages, Custom Posts) using t
 * Initial Release
 
 == Upgrade Notice ==
+
+= 3.1 =
+Spanish translation, Cosmetics.
 
 = 3.0 =
 Version 3.0 introduces a lot of new features and settings. Don't miss it!
