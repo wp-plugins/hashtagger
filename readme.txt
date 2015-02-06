@@ -14,6 +14,8 @@ Tag your posts by using #hashtags
 
 > Use #hashtags and @usernames in your posts.
 
+https://www.youtube.com/watch?v=cNNn1VLz4zs
+
 = #hashtags =
 
 This plugin uses the [WordPress Tag system](http://codex.wordpress.org/Posts_Tags_Screen) to field your post under the desired tags. When saving a post each [#hashtag](http://en.wikipedia.org/wiki/Hashtag) is added as a "normal" tag (without leading hash) to the post, so it is fully compatible with existing tags. 
