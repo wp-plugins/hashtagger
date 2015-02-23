@@ -22,7 +22,7 @@ https://www.youtube.com/watch?v=cNNn1VLz4zs
 
 This plugin uses the [WordPress Tag system](http://codex.wordpress.org/Posts_Tags_Screen) to field your post under the desired tags. When saving a post each [#hashtag](http://en.wikipedia.org/wiki/Hashtag) is added as a "normal" tag (without leading hash) to the post, so it is fully compatible with existing tags. 
 
-When showing a post all #hastags are automatically converted to links leading to the corresponding tag archive page.
+When showing a post all #hashtags are automatically converted to links leading to the corresponding tag archive page.
 
 **Caution:** It is not necessary to generally adapt existing posts, because their tags stay unchanged. But keep in mind that on saving a post all existing tas are **removed** and replaced by the tags found in your post! **This behavior can be changed in the Plugin Settings Area.**
 
@@ -61,6 +61,14 @@ You can use `do_hashtagger( $content )` in your theme files to process #hashtags
 **Example:**
 `<?php echo do_hashtagger( get_post_meta( get_the_ID(), 'mycustomfield', true ) ); ?>` 
 
+= Languages =
+
+* English
+* German
+* Spanish (thanks to [Andrew](http://www.webhostinghub.com))
+
+**Translators welcome!** The languages directory contains POT files to start new translations. Please [contact Author](http://smartware.cc/contact/) if you would like to do a translation.
+
 = Do you like the hashtagger Plugin? =
 
 Thanks, I appreciate that. You don’t need to make a donation. No money, no beer, no coffee. Please, just [tell the world that you like what I’m doing](http://smartware.cc/make-a-donation/)! And that’s all.
@@ -71,15 +79,7 @@ Thanks, I appreciate that. You don’t need to make a donation. No money, no bee
 * **[link-log](https://wordpress.org/plugins/link-log/)** - Find out where your visitors leave to. Track clicks on external links. 
 * **[smart Archive Page Remove](https://wordpress.org/plugins/smart-archive-page-remove/)** - Completely remove unwated Archive Pages from your Blog 
 * **[smart User Slug Hider](https://wordpress.org/plugins/smart-user-slug-hider/)** - Hide usernames in author pages URLs to enhance security 
-* **[JavaScript AutoLoader](https://wordpress.org/plugins/javascript-autoloader/)** - Load JavaScript files without changing files in the theme directory or installing several plugins to add all the desired functionality 
-
-= Languages =
-
-* English
-* German
-* Spanish (thanks to [Andrew](http://www.webhostinghub.com))
-
-**Translators welcome!** The languages directory contains POT files to start new translations. Please [contact Author](http://smartware.cc/contact/) if you would like to do a translation.
+* **[JavaScript AutoLoader](https://wordpress.org/plugins/javascript-autoloader/)** - Load JavaScript files without changing files in the theme directory or installing several plugins to add all the desired functionality
 
 == Installation ==
 
@@ -99,7 +99,7 @@ Thanks, I appreciate that. You don’t need to make a donation. No money, no bee
 
 = What characters can a hashtag include? =
 
-The hashtag detection follows the rules for hastags on Twitter, Facebook and Google+. The minimum length for a hastag is 2 characters. A hashtag must not start with a number. A hashtag not only ends at a space but also at punctuation marks and other special characters. A hashtag may contain underscores.
+The hashtag detection follows the rules for hashtags on Twitter, Facebook and Google+. The minimum length for a hashtag is 2 characters. A hashtag must not start with a number. A hashtag not only ends at a space but also at punctuation marks and other special characters. A hashtag may contain underscores.
 
 = Does this also work for pages? =
 
