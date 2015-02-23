@@ -32,6 +32,46 @@ The usage of @usernames can be activated optionally. @usernames can link either 
 
 Optionally @nicknames can be used instead of @usernames. This is **recommended to enhance security** ([read more](http://smartware.cc/wp-hashtagger/hashtagger-plugin-why-you-should-use-nicknames-instead-of-usernames/)). Although using @nicknames is the better option, the default is @usernames for compatibility to Plugin versions prior 2.1.
 
+= Usage =
+
+Just type anywhere in a post
+* **#hashtag** - This adds "hashtag" as tag to the current post and on links to tag archive page for "hashtag" when showing the post.
+* **+#hashtag** - Use +#hashtag to only link to a tag archive page without adding "hashtag" as tag to the post. When showing the post the link is showed as "#hashtag" (without "+"). If the tag does not exist the text remains unchanged and no link is created.
+* **##hashtag** - Use duplicate ##hashes to tell the plugin that this word should not be converted into a tag. Duplicate hashes are replaced by a single hash when showing the post.
+* **@username** - This creates a link either to the Profile Page or the Website of User "username" (@username feature has to be activated).
+* **@@username** - Use @@username to avoid link creation. When showing the post this is displayed as "@username" without link (@username feature has to be activated).
+
+= WordPress Security =
+
+**It is highly recommended to use @nicknames instead of @usernames!** Please read [this article](http://smartware.cc/wp-hashtagger/hashtagger-plugin-why-you-should-use-nicknames-instead-of-usernames/)!
+
+= Post Types and Section Types =
+
+In the plugins Settings you can define where #hashtags and @usernames should be processed. It is possible to use them on Posts, on Pages and on Custom Post Types within Content, Title and Excerpt. Activate only the Post Types and Section Types you want to be processed to avoid unnecessary processing for best performance.
+
+= Formatting links =
+
+Additional CSS Class(es) to add to the #hashtag and @username links can be configured on the plugins setting page.
+
+= Theme function =
+
+You can use `do_hashtagger( $content )` in your theme files to process #hashtags and @usernames in $content.
+
+**Example:**
+`<?php echo do_hashtagger( get_post_meta( get_the_ID(), 'mycustomfield', true ) ); ?>` 
+
+= Do you like the hashtagger Plugin? =
+
+Thanks, I appreciate that. You don’t need to make a donation. No money, no beer, no coffee. Please, just [tell the world that you like what I’m doing](http://smartware.cc/make-a-donation/)! And that’s all.
+
+= More plugins from smartware.cc =
+
+* **[404page](https://wordpress.org/plugins/404page/)** Define any of your WordPress pages as 404 error page 
+* **[link-log](https://wordpress.org/plugins/link-log/)** - Find out where your visitors leave to. Track clicks on external links. 
+* **[smart Archive Page Remove](https://wordpress.org/plugins/smart-archive-page-remove/)** - Completely remove unwated Archive Pages from your Blog 
+* **[smart User Slug Hider](https://wordpress.org/plugins/smart-user-slug-hider/)** - Hide usernames in author pages URLs to enhance security 
+* **[JavaScript AutoLoader](https://wordpress.org/plugins/javascript-autoloader/)** - Load JavaScript files without changing files in the theme directory or installing several plugins to add all the desired functionality 
+
 = Languages =
 
 * English
@@ -140,74 +180,3 @@ Spanish translation, Cosmetics.
 
 = 3.0 =
 Version 3.0 introduces a lot of new features and settings. Don't miss it!
-
-== Usage ==
-
-= Just type anywhere in a post =
-
-**#hashtag**
-
-This adds "hashtag" as tag to the current post and on links to tag archive page for "hashtag" when showing the post.
-
-**+#hashtag**
-
-Use +#hashtag to only link to a tag archive page without adding "hashtag" as tag to the post. When showing the post the link is showed as "#hashtag" (without "+"). If the tag does not exist the text remains unchanged and no link is created.
-
-**##hashtag**
-
-Use duplicate ##hashes to tell the plugin that this word should not be converted into a tag. Duplicate hashes are replaced by a single hash when showing the post.
-
-**@username** 
-
-This creates a link either to the Profile Page or the Website of User "username" (@username feature has to be activated).
-
-**@@username** 
-
-Use @@username to avoid link creation. When showing the post this is displayed as "@username" without link (@username feature has to be activated).
-
-= WordPress Security =
-
-**It is highly recommended to use @nicknames instead of @usernames!** Please read [this article](http://smartware.cc/wp-hashtagger/hashtagger-plugin-why-you-should-use-nicknames-instead-of-usernames/)!
-
-= Post Types and Section Types =
-
-In the plugins Settings you can define where #hashtags and @usernames should be processed. It is possible to use them on Posts, on Pages and on Custom Post Types within Content, Title and Excerpt. Activate only the Post Types and Section Types you want to be processed to avoid unnecessary processing for best performance.
-
-= Formatting links =
-
-Additional CSS Class(es) to add to the #hashtag and @username links can be configured on the plugins setting page.
-
-= Theme function =
-
-You can use `do_hashtagger( $content )` in your theme files to process #hashtags and @usernames in $content.
-
-**Example:**
-`<?php echo do_hashtagger( get_post_meta( get_the_ID(), 'mycustomfield', true ) ); ?>` 
-
-== More ==
-
-= Do you like the hashtagger Plugin? =
-
-Thanks, I appreciate that. You don’t need to make a donation. No money, no beer, no coffee. Please, just [tell the world that you like what I’m doing](http://smartware.cc/make-a-donation/)! And that’s all.
-
-= More plugins from smartware.cc =
-
-**[404page](https://wordpress.org/plugins/404page/)**
-
-Define any of your WordPress pages as 404 error page 
-
-**[link-log](https://wordpress.org/plugins/link-log/)**
-
-Find out where your visitors leave to. Track clicks on external links. 
-
-**[smart Archive Page Remove](https://wordpress.org/plugins/smart-archive-page-remove/)**
-
-Completely remove unwated Archive Pages from your Blog 
-
-**[smart User Slug Hider](https://wordpress.org/plugins/smart-user-slug-hider/)**
-
-Hide usernames in author pages URLs to enhance security 
-
-**[JavaScript AutoLoader](https://wordpress.org/plugins/javascript-autoloader/)**
-
-Load JavaScript files without changing files in the theme directory or installing several plugins to add all the desired functionality 
