@@ -14,7 +14,7 @@ Tag your posts by using #hashtags
 
 > Use #hashtags and @usernames in your posts.
 
-**[Plugin Homepage](http://smartware.cc/wp-hashtagger)**
+**See also [Plugin Homepage](http://smartware.cc/wp-hashtagger)**
 
 https://www.youtube.com/watch?v=cNNn1VLz4zs
 
@@ -35,6 +35,7 @@ Optionally @nicknames can be used instead of @usernames. This is **recommended t
 = Usage =
 
 Just type anywhere in a post
+
 * **#hashtag** - This adds "hashtag" as tag to the current post and on links to tag archive page for "hashtag" when showing the post.
 * **+#hashtag** - Use +#hashtag to only link to a tag archive page without adding "hashtag" as tag to the post. When showing the post the link is showed as "#hashtag" (without "+"). If the tag does not exist the text remains unchanged and no link is created.
 * **##hashtag** - Use duplicate ##hashes to tell the plugin that this word should not be converted into a tag. Duplicate hashes are replaced by a single hash when showing the post.
