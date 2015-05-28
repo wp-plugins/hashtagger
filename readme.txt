@@ -1,10 +1,10 @@
 === hashtagger ===
 Contributors: smartware.cc
 Donate link:http://smartware.cc/make-a-donation/
-Tags: hashtag, hashtags, tag, tags, tag archive
+Tags: hashtag, hashtags, tag, tags, tag archive, archive, social, twitter, facebook
 Requires at least: 3.0
 Tested up to: 4.2
-Stable tag: 3.1
+Stable tag: 3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,9 +14,13 @@ Tag your posts by using #hashtags
 
 > Use #hashtags and @usernames in your posts.
 
-**See also [Plugin Homepage](http://smartware.cc/wp-hashtagger)**
+**See also [Plugin Homepage](http://smartware.cc/free-wordpress-plugins/hashtagger/) and [Plugin Doc](http://smartware.cc/docs/hashtagger/)**
 
 https://www.youtube.com/watch?v=cNNn1VLz4zs
+
+= New in Version 3.2 =
+
+**hashtagger now works with [User Submitted Posts](https://wordpress.org/plugins/user-submitted-posts/) and [Barley for WordPress](http://getbarley.com/editor/wp)**
 
 = #hashtags =
 
@@ -139,9 +143,13 @@ Yes, you can regenerate all affected objects (Post, Pages, Custom Posts) using t
 4. hashtagger Settings Section Types Section: In this section the Section Types to handle can be defined - only activate the Section Types you want to use for best performance
 5. hashtagger Settings CSS Style Section: Add CSS Classes to use for the generated links in Front End
 6. hashtagger Settings Regenerate Section: Regenerate all existing Objects with the current settings
-7. hashtagger Settings Regenerate Section: Regeneration in process
 
 == Changelog ==
+
+= 3.2 (2015-05-28) =
+* Works now with [User Submitted Posts](https://wordpress.org/plugins/user-submitted-posts/)
+* Works now with [Barley for WordPress](http://getbarley.com/editor/wp)
+* Hook filters only when needed
 
 = 3.1 (2015-02-05) =
 * Spanish translation added (thanks to [Andrew](http://www.webhostinghub.com) for translating)
@@ -175,6 +183,9 @@ Yes, you can regenerate all affected objects (Post, Pages, Custom Posts) using t
 * Initial Release
 
 == Upgrade Notice ==
+
+= 3.2 =
+Works now with "User Submitted Posts" Plugin and "Barley for WordPress" Plugin
 
 = 3.1 =
 Spanish translation, Cosmetics.

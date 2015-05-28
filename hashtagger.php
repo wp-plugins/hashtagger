@@ -3,13 +3,13 @@
 Plugin Name: hashtagger
 Plugin URI: http://smartware.cc/wp-hashtagger
 Description: Tag your posts by using #hashtags
-Version: 3.1
+Version: 3.2
 Author: smartware.cc
 Author URI: http://smartware.cc
 License: GPL2
 */
 
-/*  Copyright 2014  smartware.cc  (email : sw@smartware.cc)
+/*  Copyright smartware.cc (email : sw@smartware.cc)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License, version 2, as 
@@ -54,14 +54,26 @@ class Hashtagger {
     add_action( 'init', array( $this, 'add_text_domains' ) );
 
     add_action( 'save_post', array( $this, 'generate_tags' ), 9999 );
-    add_filter( 'the_content', array( $this, 'process_content' ), 9999 );
     
-    if ( $this->settings['sectiontype_title'] ) {
-      add_filter( 'the_title', array( $this, 'process_title' ), 9999 );
-    }
+    // *** For Plugin User Submitted Posts https://wordpress.org/plugins/user-submitted-posts/ (since v 3.2)
+    //     had to use filter usp_new_post insetad of action usp_insert_after because tags are created AFTER usp_insert_after
+    add_filter( 'usp_new_post', array( $this, 'process_content_for_user_submitted_posts' ), 9999 );
     
-    if ( $this->settings['sectiontype_excerpt'] ) {
-      add_filter( 'the_excerpt', array( $this, 'process_excerpt' ), 9999 );
+    // *** For Barley - Inline Editing Plugin for WordPress (since v 3.2)
+    //     had to override their save function...
+    add_action( 'wp_ajax_barley_update_post',  array( $this, 'process_content_for_barely' ), 0 );
+	
+    
+    if ( ! is_admin() ) {
+      add_filter( 'the_content', array( $this, 'process_content' ), 9999 );
+      
+      if ( $this->settings['sectiontype_title'] ) {
+        add_filter( 'the_title', array( $this, 'process_title' ), 9999 );
+      }
+      
+      if ( $this->settings['sectiontype_excerpt'] ) {
+        add_filter( 'the_excerpt', array( $this, 'process_excerpt' ), 9999 );
+      }
     }
     
     add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'add_settings_link' ) ); 
@@ -227,6 +239,70 @@ class Hashtagger {
       $content = $match[1] . '<a' . $css . ' href="' . $linkto . '"'. $target . '>@' . $match[2] . '</a>';
     }
     return $content;
+  }
+  
+  // *** For Plugin User Submitted Posts https://wordpress.org/plugins/user-submitted-posts/ (since v 3.2) 
+  function process_content_for_user_submitted_posts( $new_user_post ) {
+    $this->generate_tags( $new_user_post['id'] );
+    return $new_user_post;
+  }
+  
+  // *** For Barley - Inline Editing Plugin for WordPress (since v 3.2)
+  function process_content_for_barely() {
+    // this function overrides barley_update_post in functions_posts.php of the Barely plugin
+    
+    // -- Taken from Barely
+    $json            = array();
+    $json['success'] = false;
+    $columns         = array(
+                      'the_title'   => 'post_title',
+                      'the_content' => 'post_content');
+
+    // Only proceed if we have a post_id
+    if ( isset($_POST['p']) && ! empty($_POST['p']) ) {
+      $k               = trim(urldecode($_POST['k']));
+      $v               = trim(urldecode($_POST['v']));
+      $pid             = trim(urldecode($_POST['p']));
+
+      // Strip trailing BR tag in FireFox
+      if ( $k === 'the_title' ) {
+        $v = preg_replace('/(.*)<br[^>]*>/i', '$1', $v);
+      }
+
+      // For the_title and the_content only
+      if (array_key_exists($k, $columns)) {
+          $res = wp_update_post(array(
+              'ID'         => $pid,
+              $columns[$k] => $v
+          ));
+      }
+
+      // Save an Advanced Custom Field
+      if ( strpos($k, 'field_') !== false ) {
+        $res = update_field($k,$v,$pid);
+      }
+
+      // Save a WordPress Custom Field
+      if ( strpos($k, 'field_') === false && !array_key_exists($k, $columns) ) {
+        $res = update_post_meta($pid,$k,$v);
+      }
+      
+      // -- ** added for hashtagger **
+      if ( $k === 'the_content' ) {
+        $this->generate_tags( $pid );
+      }
+      // -- ** added for hashtagger **
+
+      // Good? No? Yes?
+      $json['success'] = ($res > 0) ? true : false;
+
+    } // end post_id
+
+    header('Content-Type: application/json');
+    print json_encode($json);
+    exit();
+    // -- Taken from Barely
+    
   }
 
   // uninstall plugin
@@ -394,7 +470,7 @@ class Hashtagger_Admin {
                           <p><strong>#hashtag <?php _e( 'Permalinks' ); ?></strong></p>
                           <hr />
                           <p>#hashtags <?php _e( 'currently link to', 'hashtagger'); ?> <code style="white-space: nowrap"><?php echo $this->tag_base_url() . '[hashtag]'; ?></code>.</p>
-                          <p><?php printf( __( 'The <b>Tag base</b> for the Archive URL can be changed on %s page', 'hashtagger' ), '<a href="'. admin_url( 'options-permalink.php' ) .'">' . __( 'Permalink Settings' ) . '</a>' ); ?>.</p>
+                          <p><?php printf( __( 'The <b>Tag base</b> for the Archive URL can be changed on %s page', 'hashtagger' ) . ' <a class="dashicons dashicons-editor-help" href="http://smartware.cc/docs/hashtagger/#settings_general_tagbase"></a>', '<a href="'. admin_url( 'options-permalink.php' ) .'">' . __( 'Permalink Settings' ) . '</a>' ); ?>.</p>
                         </div>
                       </div>
                     <?php } ?>
@@ -430,34 +506,34 @@ class Hashtagger_Admin {
     add_settings_section( 'hashtagger-settings-general', '', array( $this, 'admin_section_general_title' ), 'hashtagger_settings_section_general' );
     register_setting( 'hashtagger_settings_general', 'swcc_htg_usernames' ) ;
     register_setting( 'hashtagger_settings_general', 'swcc_htg_usernamesnick' );
-    add_settings_field( 'swcc_htg_settings_usernames', __( 'Link @usernames', 'hashtagger' ), array( $this, 'admin_usernames' ), 'hashtagger_settings_section_general', 'hashtagger-settings-general', array( 'label_for' => 'swcc_htg_usernames' ) );
-    add_settings_field( 'swcc_htg_settings_usernamesnick', __( '@nicknames', 'hashtagger' ), array( $this, 'admin_usernamesnick' ), 'hashtagger_settings_section_general', 'hashtagger-settings-general', array( 'label_for' => 'swcc_htg_usernamesnick' ) );
+    add_settings_field( 'swcc_htg_settings_usernames', __( 'Link @usernames', 'hashtagger' ) . ' <a class="dashicons dashicons-editor-help" href="http://smartware.cc/docs/hashtagger/#settings_general_usernames"></a>', array( $this, 'admin_usernames' ), 'hashtagger_settings_section_general', 'hashtagger-settings-general', array( 'label_for' => 'swcc_htg_usernames' ) );
+    add_settings_field( 'swcc_htg_settings_usernamesnick', __( '@nicknames', 'hashtagger' ) . ' <a class="dashicons dashicons-editor-help" href="http://smartware.cc/docs/hashtagger/#settings_general_nicknames"></a>', array( $this, 'admin_usernamesnick' ), 'hashtagger_settings_section_general', 'hashtagger-settings-general', array( 'label_for' => 'swcc_htg_usernamesnick' ) );
     
     add_settings_section( 'hashtagger-settings-advanced', '', array( $this, 'admin_section_advanced_title' ), 'hashtagger_settings_section_advanced' );
     register_setting( 'hashtagger_settings_advanced', 'swcc_htg_advanced_nodelete' );
-    add_settings_field( 'swcc_htg_settings_advanced_nodelete', __( 'Do not delete unused Tags', 'hashtagger') , array( $this, 'admin_advanced_nodelete' ), 'hashtagger_settings_section_advanced', 'hashtagger-settings-advanced', array( 'label_for' => 'swcc_htg_advanced_nodelete' ) );
+    add_settings_field( 'swcc_htg_settings_advanced_nodelete', __( 'Do not delete unused Tags', 'hashtagger') . ' <a class="dashicons dashicons-editor-help" href="http://smartware.cc/docs/hashtagger/#settings_advanced_nodelete"></a>' , array( $this, 'admin_advanced_nodelete' ), 'hashtagger_settings_section_advanced', 'hashtagger-settings-advanced', array( 'label_for' => 'swcc_htg_advanced_nodelete' ) );
     
     add_settings_section( 'hashtagger-settings-posttype', '', array( $this, 'admin_section_posttype_title' ), 'hashtagger_settings_section_posttype' );
     register_setting( 'hashtagger_settings_posttype', 'swcc_htg_posttype_page' );
     register_setting( 'hashtagger_settings_posttype', 'swcc_htg_posttype_custom' );
-    add_settings_field( 'swcc_htg_settings_posttype_post', __( 'Posts' ), array( $this, 'admin_posttype_post' ), 'hashtagger_settings_section_posttype', 'hashtagger-settings-posttype', array( 'label_for' => 'swcc_htg_posttype_post' ) );
-    add_settings_field( 'swcc_htg_settings_posttype_page', __( 'Pages' ), array( $this, 'admin_posttype_page' ), 'hashtagger_settings_section_posttype', 'hashtagger-settings-posttype', array( 'label_for' => 'swcc_htg_posttype_page' ) );
-    add_settings_field( 'swcc_htg_settings_posttype_custom', __( 'Custom Post Types', 'hashtagger' ), array( $this, 'admin_posttype_custom' ), 'hashtagger_settings_section_posttype', 'hashtagger-settings-posttype', array( 'label_for' => 'swcc_htg_posttype_custom' ) );
+    add_settings_field( 'swcc_htg_settings_posttype_post', __( 'Posts' ) . ' <a class="dashicons dashicons-editor-help" href="http://smartware.cc/docs/hashtagger/#settings_posttypes_posts"></a>', array( $this, 'admin_posttype_post' ), 'hashtagger_settings_section_posttype', 'hashtagger-settings-posttype', array( 'label_for' => 'swcc_htg_posttype_post' ) );
+    add_settings_field( 'swcc_htg_settings_posttype_page', __( 'Pages' ) . ' <a class="dashicons dashicons-editor-help" href="http://smartware.cc/docs/hashtagger/#settings_posttypes_pages"></a>', array( $this, 'admin_posttype_page' ), 'hashtagger_settings_section_posttype', 'hashtagger-settings-posttype', array( 'label_for' => 'swcc_htg_posttype_page' ) );
+    add_settings_field( 'swcc_htg_settings_posttype_custom', __( 'Custom Post Types', 'hashtagger' ) . ' <a class="dashicons dashicons-editor-help" href="http://smartware.cc/docs/hashtagger/#settings_posttypes_custom"></a>', array( $this, 'admin_posttype_custom' ), 'hashtagger_settings_section_posttype', 'hashtagger-settings-posttype', array( 'label_for' => 'swcc_htg_posttype_custom' ) );
     
     add_settings_section( 'hashtagger-settings-sectiontype', '', array( $this, 'admin_section_sectiontype_title' ), 'hashtagger_settings_section_sectiontype' );
     register_setting( 'hashtagger_settings_sectiontype', 'swcc_htg_sectiontype_title' );
     register_setting( 'hashtagger_settings_sectiontype', 'swcc_htg_sectiontype_excerpt' );
-    add_settings_field( 'swcc_htg_sectiontype_title', __( 'Title' ), array( $this, 'admin_sectiontype_title' ), 'hashtagger_settings_section_sectiontype', 'hashtagger-settings-sectiontype', array( 'label_for' => 'swcc_htg_sectiontype_title' ) );
-    add_settings_field( 'swcc_htg_sectiontype_excerpt', __( 'Excerpt' ), array( $this, 'admin_sectiontype_excerpt' ), 'hashtagger_settings_section_sectiontype', 'hashtagger-settings-sectiontype', array( 'label_for' => 'swcc_htg_sectiontype_excerpt' ) );
-    add_settings_field( 'swcc_htg_sectiontype_content', __( 'Content' ), array( $this, 'admin_sectiontype_content' ), 'hashtagger_settings_section_sectiontype', 'hashtagger-settings-sectiontype', array( 'label_for' => 'swcc_htg_sectiontype_content' ) );
+    add_settings_field( 'swcc_htg_sectiontype_title', __( 'Title' ) . ' <a class="dashicons dashicons-editor-help" href="http://smartware.cc/docs/hashtagger/#settings_sectiontypes_title"></a>', array( $this, 'admin_sectiontype_title' ), 'hashtagger_settings_section_sectiontype', 'hashtagger-settings-sectiontype', array( 'label_for' => 'swcc_htg_sectiontype_title' ) );
+    add_settings_field( 'swcc_htg_sectiontype_excerpt', __( 'Excerpt' ) . ' <a class="dashicons dashicons-editor-help" href="http://smartware.cc/docs/hashtagger/#settings_sectiontypes_excerpt"></a>', array( $this, 'admin_sectiontype_excerpt' ), 'hashtagger_settings_section_sectiontype', 'hashtagger-settings-sectiontype', array( 'label_for' => 'swcc_htg_sectiontype_excerpt' ) );
+    add_settings_field( 'swcc_htg_sectiontype_content', __( 'Content' ) . ' <a class="dashicons dashicons-editor-help" href="http://smartware.cc/docs/hashtagger/#settings_sectiontypes_content"></a>', array( $this, 'admin_sectiontype_content' ), 'hashtagger_settings_section_sectiontype', 'hashtagger-settings-sectiontype', array( 'label_for' => 'swcc_htg_sectiontype_content' ) );
     
     add_settings_section( 'hashtagger-settings-css', '', array( $this, 'admin_section_css_title' ), 'hashtagger_settings_section_css' );
     register_setting( 'hashtagger_settings_css', 'swcc_htg_cssclass', array( $this, 'admin_cssclass_validate' ) );
     register_setting( 'hashtagger_settings_css', 'swcc_htg_cssclass_notag', array( $this, 'admin_cssclass_validate' ) );
     register_setting( 'hashtagger_settings_css', 'swcc_htg_usernamescssclass', array( $this, 'admin_cssclass_validate' ) );
-    add_settings_field( 'swcc_htg_settings_cssclass', __( 'CSS class name(s) for #hashtags', 'hashtagger' ), array( $this, 'admin_cssclass' ), 'hashtagger_settings_section_css', 'hashtagger-settings-css', array( 'label_for' => 'swcc_htg_cssclass' ) );
-    add_settings_field( 'swcc_htg_settings_cssclass_notag', __( 'CSS class name(s) for +#hashtag links', 'hashtagger' ), array( $this, 'admin_cssclass_notag' ), 'hashtagger_settings_section_css', 'hashtagger-settings-css', array( 'label_for' => 'swcc_htg_cssclass_notag' ) );
-    add_settings_field( 'swcc_htg_settings_usernamescssclass', __( 'CSS class name(s) for @usernames', 'hashtagger' ), array( $this, 'admin_usernamescssclass' ), 'hashtagger_settings_section_css', 'hashtagger-settings-css', array( 'label_for' => 'swcc_htg_usernamescssclass' ) );
+    add_settings_field( 'swcc_htg_settings_cssclass', __( 'CSS class name(s) for #hashtags', 'hashtagger' ) . ' <a class="dashicons dashicons-editor-help" href="http://smartware.cc/docs/hashtagger/#settings_css_hashtags"></a>', array( $this, 'admin_cssclass' ), 'hashtagger_settings_section_css', 'hashtagger-settings-css', array( 'label_for' => 'swcc_htg_cssclass' ) );
+    add_settings_field( 'swcc_htg_settings_cssclass_notag', __( 'CSS class name(s) for +#hashtag links', 'hashtagger' ) . ' <a class="dashicons dashicons-editor-help" href="http://smartware.cc/docs/hashtagger/#settings_css_hashtaglinks"></a>', array( $this, 'admin_cssclass_notag' ), 'hashtagger_settings_section_css', 'hashtagger-settings-css', array( 'label_for' => 'swcc_htg_cssclass_notag' ) );
+    add_settings_field( 'swcc_htg_settings_usernamescssclass', __( 'CSS class name(s) for @usernames', 'hashtagger' ) . ' <a class="dashicons dashicons-editor-help" href="http://smartware.cc/docs/hashtagger/#settings_css_usernames"></a>', array( $this, 'admin_usernamescssclass' ), 'hashtagger_settings_section_css', 'hashtagger-settings-css', array( 'label_for' => 'swcc_htg_usernamescssclass' ) );
     
   }
   
@@ -603,7 +679,7 @@ class Hashtagger_Admin {
         var objects = <?php echo count( $objects ); ?>;
         var counter = 0;
         var abort = false;
-        jQuery( '#hashtagger_ajax_area' ).html( '<p><input type="checkbox" name="hashtagger_regenerate_confirmation" id="hashtagger_regenerate_confirmation" value="ok" /><label for="hashtagger_regenerate_confirmation" class="check"></label><span id="hashtagger_regenerate_confirmation_hint"><?php _e( 'Please confirm to regenerate', 'hashtagger' ); ?></span></p><p><input type="button" name="sumbit_regnerate" id="sumbit_regnerate" class="button button-primary button-large" value="<?php _e( 'Process all objects', 'hashtagger' ); ?> (<?php echo count( $objects ); ?>)"  /></p>' );
+        jQuery( '#hashtagger_ajax_area' ).html( '<p><input type="checkbox" name="hashtagger_regenerate_confirmation" id="hashtagger_regenerate_confirmation" value="ok" /><label for="hashtagger_regenerate_confirmation" class="check"></label><span id="hashtagger_regenerate_confirmation_hint"><?php _e( 'Please confirm to regenerate', 'hashtagger' ); ?> <a class="dashicons dashicons-editor-help" href="http://smartware.cc/docs/hashtagger/#settings_regeneration"></a></span></p><p><input type="button" name="sumbit_regnerate" id="sumbit_regnerate" class="button button-primary button-large" value="<?php _e( 'Process all objects', 'hashtagger' ); ?> (<?php echo count( $objects ); ?>)"  /></p>' );
         jQuery( '#sumbit_regnerate' ).click( function() { 
           if ( jQuery( '#hashtagger_regenerate_confirmation' ).prop( 'checked' ) ) {
             jQuery( '#hashtagger_ajax_area' ).html( '<p><?php _e( 'Please be patient while objects are processed. Do not close or leave this page.', 'hashtagger' ); ?></p><p><div style="width: 100%; height: 40px; border: 2px solid #222; border-radius: 5px; background-color: #FFF"><div id="hashtagger_regnerate_progressbar" style="width: 0; height: 100%; background-image: url(<?php echo plugins_url( 'progress.png', __FILE__ ); ?>); background-repeat: repeat-x" ></div></div></p><p id="hashtagger_abort_area"><input type="button" name="cancel_regnerate" id="cancel_regnerate" class="button button-secondary button-large" value="<?php _e( 'Abort regeneration', 'hashtagger' ); ?>" /></p>' );
