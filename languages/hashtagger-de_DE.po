@@ -1,0 +1,127 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: hashtagger\n"
+"POT-Creation-Date: 2014-07-31 19:14+0100\n"
+"PO-Revision-Date: 2014-11-23 14:11+0100\n"
+"Last-Translator: smartware.cc <sw@smartware.cc>\n"
+"Language-Team: smartware.cc <sw@smartware.cc>\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.10\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __();_e()\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+msgid "currently link to"
+msgstr "verlinken aktuell zu"
+
+msgid "The <b>Tag base</b> for the Archive URL can be changed on %s page"
+msgstr ""
+"Die <b>Schlagwort-Basis</b> für die Archiv URL kann unter %s geändert werden"
+
+msgid "CSS class name(s) for #hashtags"
+msgstr "CSS Klassen Name(n) für #hashtags"
+
+msgid "CSS class name(s) for +#hashtag links"
+msgstr "CSS Klassen Name(n) für +#hashtag Links"
+
+msgid "Link @usernames"
+msgstr "@usernamen verlinken"
+
+msgid "CSS class name(s) for @usernames"
+msgstr "CSS Klassen Name(n) für @usernamen"
+
+msgid "Ignore @usernames"
+msgstr "@usernamen ignorieren"
+
+msgid "Link @usernames to users profile page"
+msgstr "@usernamen mit Benutzerprofil verlinken"
+
+msgid "Link @usernames to users website in same browser tab"
+msgstr "@usernamen mit Website des Benutzers in gleichem Browser Tab verlinken"
+
+msgid "Link @usernames to users website in new browser tab"
+msgstr "@usernamen mit Website des Benutzers in neuem Browser Tab verlinken"
+
+msgid "@nicknames"
+msgstr "@nicknamen"
+
+msgid "Use @nicknames instead of @usernames"
+msgstr "@nicknamen anstatt @usernamen verwenden"
+
+msgid "Highly recommended to enhance WordPress security!"
+msgstr "Dringend empfohlen zur Verbesserung der WordPress Sicherheit!"
+
+msgid "Read more"
+msgstr "Mehr darüber"
+
+msgid "Post Types"
+msgstr "Beitragstypen"
+
+msgid "Section Types"
+msgstr "Bereiche"
+
+msgid "CSS Style"
+msgstr "CSS Stil"
+
+msgid "Regnerate"
+msgstr "Erneuern"
+
+msgid "Process all existing objects using the current settings"
+msgstr "Alle vorhandenen Objekte mit den aktuellen Einstellungen bearbeiten"
+
+msgid "No objects to process!"
+msgstr "Keine Objekte zu verarbeiten!"
+
+msgid "Do not delete unused Tags"
+msgstr "Nicht benutzte Tags nicht löschen"
+
+msgid "Custom Post Types"
+msgstr "Benutzerdefinierter Beitragstyp"
+
+msgid "Handling of @usernames"
+msgstr "Behandlung von @usernamen"
+
+msgid "Handling of existing Tags"
+msgstr "Behandlung von vorhandenen Tags"
+
+msgid "Post Types to process"
+msgstr "Zu verarbeitende Beitragstypen"
+
+msgid "Section Types to process"
+msgstr "Zu verarbeitende Bereiche"
+
+msgid "CSS Classes to style links"
+msgstr "CSS Klassen für Links"
+
+msgid "Please confirm to regenerate"
+msgstr "Neu-Erstellung bitte bestätigen"
+
+msgid "Process all objects"
+msgstr "Alle Objekte bearbeiten"
+
+msgid ""
+"Please be patient while objects are processed. Do not close or leave this "
+"page."
+msgstr ""
+"Bitte warten während die Objekte bearbeitet werden. Diese Seite nicht "
+"schließen oder verlassen."
+
+msgid "Abort regeneration"
+msgstr "Vorgang abbrechen"
+
+msgid "Aborting process..."
+msgstr "Vorgang wird abgebrochen..."
+
+#. translators: never change {COUNTER} and {OBJECTS} !!!
+msgid "Process aborted. {COUNTER} of {OBJECTS} objects have been processed."
+msgstr ""
+"Vorgang abgebrochen. {COUNTER} von {OBJECTS} Objekten wurden bearbeitet."
+
+#. translators: never change {OBJECTS} !!!
+msgid "All done. {OBJECTS} objects have been processed."
+msgstr "Alles erledigt. {OBJECTS} Objekte wurden bearbeitet."
