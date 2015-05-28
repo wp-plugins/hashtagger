@@ -40,7 +40,7 @@ class Hashtagger {
   
 	public function __construct() {
 		$this->plugin_name = 'hashtagger';
-		$this->version = '3.1';
+		$this->version = '3.2';
     $this->get_settings();
     $this->init();
     $this->init_admin();
@@ -760,6 +760,7 @@ class Hashtagger_Admin {
           <h3><span><?php _e( 'Need help?', 'hashtagger_general' ); ?></span></h3>
           <div class="inside">
             <ul>
+              <li><div class="dashicons dashicons-book-alt"></div>&nbsp;&nbsp;<a href="http://smartware.cc/docs/hashtagger/">Take a look at the Plugin Doc</a></li>
               <li><div class="dashicons dashicons-wordpress"></div>&nbsp;&nbsp;<a href="http://wordpress.org/plugins/hashtagger/faq/"><?php _e( 'Take a look at the FAQ section', 'hashtagger_general' ); ?></a></li>
               <li><div class="dashicons dashicons-wordpress"></div>&nbsp;&nbsp;<a href="http://wordpress.org/support/plugin/hashtagger"><?php _e( 'Take a look at the Support section', 'hashtagger_general'); ?></a></li>
               <li><div class="dashicons dashicons-admin-comments"></div>&nbsp;&nbsp;<a href="http://smartware.cc/contact/"><?php _e( 'Feel free to contact the Author', 'hashtagger_general' ); ?></a></li>
