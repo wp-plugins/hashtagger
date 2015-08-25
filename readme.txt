@@ -3,7 +3,7 @@ Contributors: smartware.cc
 Donate link:http://smartware.cc/make-a-donation/
 Tags: hashtag, hashtags, tag, tags, tag archive, archive, social, twitter, facebook
 Requires at least: 3.0
-Tested up to: 4.2
+Tested up to: 4.3
 Stable tag: 3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
